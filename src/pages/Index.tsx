@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { BookOpen, Scale, ListOrdered } from "lucide-react";
+import { BookOpen, Scale, ListOrdered, Globe } from "lucide-react";
 import { format } from "date-fns";
+import { useI18n } from "@/lib/i18n";
 import heroDough from "@/assets/hero-dough.jpg";
 import DoughCalculator from "@/components/DoughCalculator";
 import AdvancedOptions from "@/components/AdvancedOptions";
