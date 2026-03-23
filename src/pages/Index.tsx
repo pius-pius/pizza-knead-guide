@@ -197,7 +197,7 @@ const Index = () => {
 
   const saveRecipe = useCallback(() => {
     const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
-    const name = `Ricetta ${saved.length + 1} - ${format(new Date(), "dd/MM HH:mm")}`;
+    const name = `${t("save.ricetta")} ${saved.length + 1} - ${format(new Date(), "dd/MM HH:mm")}`;
     saved.push({
       name, recipe, numPanetti, pesoPanetto, teglie, idratazione, yeastType,
       lmIdratazione, maturationHours, autolisiHours, tAmbiente,
@@ -205,7 +205,7 @@ const Index = () => {
       salePercent, olioPercent, maltoPercent, lmPercent, flourMode, flours, prefermentoType,
     });
     localStorage.setItem("savedRecipes", JSON.stringify(saved));
-    alert(`"${name}" salvata!`);
+    alert(`"${name}" ${t("save.salvata")}`);
   }, [
     recipe, numPanetti, pesoPanetto, teglie, idratazione, yeastType,
     lmIdratazione, maturationHours, autolisiHours, tAmbiente,
