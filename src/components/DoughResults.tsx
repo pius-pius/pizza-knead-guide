@@ -60,7 +60,7 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
       </div>
 
       {/* Ingredients */}
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {ingredients.map((ing) => (
           <div key={ing.name} className="bg-card rounded-xl p-3.5 shadow-sm flex items-center justify-between">
             <div className="flex items-center gap-3">
