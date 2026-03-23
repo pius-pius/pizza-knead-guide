@@ -225,16 +225,23 @@ const Index = () => {
       <header className="relative h-36 overflow-hidden flex-shrink-0">
         <img
           src={heroDough}
-          alt="Impasto per pizza su tagliere di legno con farina"
+          alt={lang === "it" ? "Impasto per pizza su tagliere di legno con farina" : "Pizza dough on a wooden board with flour"}
           className="w-full h-full object-cover"
           loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/30 to-foreground/70 flex flex-col justify-end p-4">
+          <button
+            onClick={() => setLang(lang === "it" ? "en" : "it")}
+            className="absolute top-3 right-3 flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
+          >
+            <Globe className="h-3.5 w-3.5" />
+            {lang === "it" ? "EN" : "IT"}
+          </button>
           <h1 className="text-2xl font-bold text-primary-foreground leading-tight text-center">
-            Pizza Perfetta 🍕
+            {t("app.title")}
           </h1>
           <p className="text-primary-foreground/80 text-xs mt-0.5 text-center">
-            Calcolatore professionale per impasti
+            {t("app.subtitle")}
           </p>
         </div>
       </header>
