@@ -219,7 +219,7 @@ const Index = () => {
   const activeTab: Tab = activeView === "avanzate" ? "ricetta" : (activeView as Tab);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col max-w-lg mx-auto">
+    <div className="min-h-screen bg-background flex flex-col max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto">
       <header className="relative h-36 overflow-hidden flex-shrink-0">
         <img
           src={heroDough}
