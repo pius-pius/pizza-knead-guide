@@ -111,7 +111,7 @@ const DoughCalculator = ({
       {/* 1. Recipe selector */}
       <div className="bg-card rounded-2xl p-4 shadow-sm">
         <p className="font-semibold uppercase tracking-wide mb-3 mx-[70px] text-center text-base text-primary">CHE TIPO DI PIZZA VUOI CUCINARE ?</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {allRecipes.map((r) =>
           <button
             key={r.key}
