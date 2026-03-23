@@ -34,12 +34,7 @@ export type MaturationMode = "quando_inizio" | "quando_mangio";
 type View = "ricetta" | "avanzate" | "dosi" | "processo";
 type Tab = "ricetta" | "dosi" | "processo";
 
-const tabs: { id: Tab; label: string; icon: typeof BookOpen }[] = [
-  { id: "ricetta", label: "Ricetta", icon: BookOpen },
-  { id: "dosi", label: "Dosi", icon: Scale },
-  { id: "processo", label: "Processo", icon: ListOrdered },
-];
-
+// tabs will be built inside component using t()
 let tegliaNextId = 2;
 
 const getDefaultScheduleDate = () => {
