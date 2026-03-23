@@ -219,7 +219,7 @@ const Index = () => {
   const activeTab: Tab = activeView === "avanzate" ? "ricetta" : (activeView as Tab);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col max-w-lg mx-auto">
+    <div className="min-h-screen bg-background flex flex-col max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto">
       <header className="relative h-36 overflow-hidden flex-shrink-0">
         <img
           src={heroDough}
@@ -317,7 +317,7 @@ const Index = () => {
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-50">
-        <div className="max-w-lg mx-auto flex">
+        <div className="max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto flex">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;

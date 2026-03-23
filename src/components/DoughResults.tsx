@@ -60,7 +60,7 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
       </div>
 
       {/* Ingredients */}
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {ingredients.map((ing) => (
           <div key={ing.name} className="bg-card rounded-xl p-3.5 shadow-sm flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -101,7 +101,7 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
         {/* Mixing method selector */}
         <div>
           <p className="text-[10px] text-muted-foreground uppercase mb-2">Metodo di impasto</p>
-          <div className="grid grid-cols-2 gap-1.5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
             {(Object.entries(MIXING_METHOD_LABELS) as [MixingMethod, string][]).map(([key, label]) => (
               <button key={key} onClick={() => setMixingMethod(key)}
                 className={`py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
