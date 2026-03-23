@@ -1,15 +1,18 @@
 import { useState, useEffect, useRef } from "react";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const PRESETS = [
-  { label: "Rapida", hours: 2, description: "Temperatura ambiente" },
-  { label: "Classica", hours: 8, description: "Temperatura ambiente" },
-  { label: "Frigo 24h", hours: 24, description: "In frigorifero" },
-  { label: "Frigo 48h", hours: 48, description: "In frigorifero" },
-];
+import { useI18n } from "@/lib/i18n";
 
 const RisingTimer = () => {
+  const { t } = useI18n();
+
+  const PRESETS = [
+    { label: t("timer.rapida"), hours: 2, description: t("timer.temp_ambiente") },
+    { label: t("timer.classica"), hours: 8, description: t("timer.temp_ambiente") },
+    { label: t("timer.frigo_24"), hours: 24, description: t("timer.in_frigo") },
+    { label: t("timer.frigo_48"), hours: 48, description: t("timer.in_frigo") },
+  ];
+
   const [selectedPreset, setSelectedPreset] = useState(1);
   const [timeLeft, setTimeLeft] = useState(PRESETS[1].hours * 3600);
   const [isRunning, setIsRunning] = useState(false);
@@ -53,14 +56,14 @@ const RisingTimer = () => {
   return (
     <section className="px-4 py-8">
       <h2 className="text-2xl font-bold text-center mb-6">
-        Timer Lievitazione
+        {t("timer.title")}
       </h2>
 
       {/* Presets */}
       <div className="grid grid-cols-2 gap-2 mb-8">
         {PRESETS.map((preset, i) => (
           <button
-            key={preset.label}
+            key={i}
             onClick={() => selectPreset(i)}
             className={`rounded-xl p-3 text-left transition-all ${
               selectedPreset === i
@@ -80,22 +83,12 @@ const RisingTimer = () => {
       <div className="relative flex justify-center mb-8">
         <div className="relative w-56 h-56">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-            <circle
-              cx="50" cy="50" r="44"
-              fill="none"
-              stroke="hsl(var(--secondary))"
-              strokeWidth="6"
-            />
-            <circle
-              cx="50" cy="50" r="44"
-              fill="none"
-              stroke="hsl(var(--primary))"
-              strokeWidth="6"
+            <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--secondary))" strokeWidth="6" />
+            <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--primary))" strokeWidth="6"
               strokeLinecap="round"
               strokeDasharray={`${2 * Math.PI * 44}`}
               strokeDashoffset={`${2 * Math.PI * 44 * (1 - progress / 100)}`}
-              className="transition-all duration-1000"
-            />
+              className="transition-all duration-1000" />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-4xl font-display font-bold tracking-tight">
@@ -110,19 +103,10 @@ const RisingTimer = () => {
 
       {/* Controls */}
       <div className="flex justify-center gap-4">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-14 w-14 rounded-full"
-          onClick={reset}
-        >
+        <Button variant="outline" size="icon" className="h-14 w-14 rounded-full" onClick={reset}>
           <RotateCcw className="h-5 w-5" />
         </Button>
-        <Button
-          size="icon"
-          className="h-14 w-14 rounded-full"
-          onClick={() => setIsRunning(!isRunning)}
-        >
+        <Button size="icon" className="h-14 w-14 rounded-full" onClick={() => setIsRunning(!isRunning)}>
           {isRunning ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
         </Button>
       </div>

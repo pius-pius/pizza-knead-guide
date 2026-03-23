@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { format, addHours, addMinutes } from "date-fns";
 import { it } from "date-fns/locale";
 import { Undo2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import {
   calculateDough,
   generateProcess,
@@ -19,11 +20,8 @@ interface ProcessTimelineProps {
 }
 
 interface ClickedStep {
-  /** Index of the step that was clicked */
   index: number;
-  /** Timestamp when the user clicked (= "step just completed") */
   clickedAt: Date;
-  /** Original scheduled times for all steps from this index onward, for undo */
   originalTimes: Date[];
 }
 
@@ -34,8 +32,44 @@ const ProcessTimeline = ({
   scheduleHour,
   scheduleMinute,
 }: ProcessTimelineProps) => {
+  const { t, lang } = useI18n();
+  const dateLocale = lang === "it" ? it : undefined;
+
   const result = useMemo(() => calculateDough(input), [input]);
   const steps = useMemo(() => generateProcess(input, result), [input, result]);
+
+  // Translate step names and descriptions
+  const translatedSteps = useMemo(() => {
+    const stepNameMap: Record<string, { nameKey: string; descKey: string }> = {
+      start: { nameKey: "step.start", descKey: "step.start_desc" },
+      impasto: { nameKey: "step.impasto", descKey: "step.impasto_desc" },
+      impasto2: { nameKey: "step.impasto2", descKey: "step.impasto2_desc" },
+      pieghe1: { nameKey: "step.pieghe1", descKey: "step.pieghe1_desc" },
+      pieghe2: { nameKey: "step.pieghe2", descKey: "step.pieghe2_desc" },
+      pieghe3: { nameKey: "step.pieghe3", descKey: "step.pieghe3_desc" },
+      frigo: { nameKey: "step.frigo", descKey: "step.frigo_desc" },
+      staglio: { nameKey: "step.staglio", descKey: "step.staglio_desc_nap" },
+      appretto: { nameKey: "step.appretto", descKey: "step.appretto_desc_nap" },
+      puntata: { nameKey: "step.puntata", descKey: "step.puntata_desc" },
+      cottura: { nameKey: "step.cottura", descKey: "step.cottura_desc" },
+      stesura_teglia: { nameKey: "step.stesura_teglia", descKey: "step.stesura_teglia_desc" },
+      lievitazione_teglia: { nameKey: "step.lievitazione_teglia", descKey: "step.lievitazione_teglia_desc" },
+      cottura_teglia: { nameKey: "step.cottura_teglia", descKey: "step.cottura_teglia_desc" },
+      fine: { nameKey: "step.fine", descKey: "step.fine_desc" },
+    };
+
+    return steps.map(step => {
+      const mapping = stepNameMap[step.id];
+      if (mapping) {
+        return {
+          ...step,
+          name: t(mapping.nameKey as any),
+          description: t(mapping.descKey as any),
+        };
+      }
+      return step;
+    });
+  }, [steps, t]);
 
   const totalHours = useMemo(() => {
     if (steps.length === 0) return 0;
@@ -43,7 +77,6 @@ const ProcessTimeline = ({
     return last.startOffset + last.durationHours;
   }, [steps]);
 
-  // Calculate the base start time (before any clicks)
   const baseStartTime = useMemo((): Date => {
     if (scheduleDate) {
       const scheduled = new Date(scheduleDate);
@@ -57,34 +90,25 @@ const ProcessTimeline = ({
     return new Date();
   }, [maturationMode, scheduleDate, scheduleHour, scheduleMinute, totalHours]);
 
-  // Track clicked steps for progress & time recalc
   const [clickedStep, setClickedStep] = useState<ClickedStep | null>(null);
 
-  // Calculate actual times for each step, considering clicks
   const stepTimes = useMemo((): Date[] => {
     const times: Date[] = steps.map(s => addHours(baseStartTime, s.startOffset));
-
     if (clickedStep) {
-      // From clickedStep.index + 1 onward, recalculate based on now
       const now = clickedStep.clickedAt;
-      // The next step starts at now (the clicked step was just completed)
       let currentTime = now;
       for (let j = clickedStep.index + 1; j < steps.length; j++) {
         times[j] = currentTime;
         currentTime = addMinutes(currentTime, steps[j].durationHours * 60);
       }
     }
-
     return times;
   }, [steps, baseStartTime, clickedStep]);
 
   const handleStepClick = useCallback((index: number) => {
-    if (clickedStep?.index === index) return; // already clicked, use undo button
-
-    // Save original times for undo
+    if (clickedStep?.index === index) return;
     const originalTimes = steps.map(s => addHours(baseStartTime, s.startOffset));
     if (clickedStep) {
-      // Recalc with current click state for proper undo
       const now = clickedStep.clickedAt;
       let currentTime = now;
       for (let j = clickedStep.index + 1; j < steps.length; j++) {
@@ -92,12 +116,7 @@ const ProcessTimeline = ({
         currentTime = addMinutes(currentTime, steps[j].durationHours * 60);
       }
     }
-
-    setClickedStep({
-      index,
-      clickedAt: new Date(),
-      originalTimes,
-    });
+    setClickedStep({ index, clickedAt: new Date(), originalTimes });
   }, [clickedStep, steps, baseStartTime]);
 
   const handleUndo = useCallback((e: React.MouseEvent) => {
@@ -119,10 +138,10 @@ const ProcessTimeline = ({
   };
 
   const formatTime = (date: Date): string =>
-    format(date, "HH:mm", { locale: it });
+    format(date, "HH:mm", { locale: dateLocale });
 
   const formatDateTime = (date: Date): string =>
-    format(date, "EEE dd/MM HH:mm", { locale: it });
+    format(date, "EEE dd/MM HH:mm", { locale: dateLocale });
 
   const isMultiDay = totalHours > 24;
   const fmt = isMultiDay ? formatDateTime : formatTime;
@@ -133,22 +152,22 @@ const ProcessTimeline = ({
 
   return (
     <section className="px-4 py-6">
-      <h2 className="text-2xl font-bold text-center mb-2">Processo</h2>
+      <h2 className="text-2xl font-bold text-center mb-2">{t("proc.title")}</h2>
       <p className="text-center text-muted-foreground text-sm mb-1">
-        Tempo totale: ~{formatDuration(totalHours)}
+        {t("proc.tempo_totale")}: ~{formatDuration(totalHours)}
       </p>
       <p className="text-center text-xs text-primary font-medium mb-6">
-        Inizio: {formatDateTime(stepTimes[0] || baseStartTime)} → Fine: {formatDateTime(endTime)}
+        {t("proc.inizio")}: {formatDateTime(stepTimes[0] || baseStartTime)} → {t("proc.fine")}: {formatDateTime(endTime)}
       </p>
 
       <div className="relative">
         <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-border" />
 
         <div className="space-y-0">
-          {steps.map((step, i) => {
+          {translatedSteps.map((step, i) => {
             const completed = isCompleted(i);
             const stepStart = stepTimes[i];
-            const stepEnd = addMinutes(stepStart, step.durationHours * 60);
+            const stepEnd = addMinutes(stepStart, steps[i].durationHours * 60);
             const startStr = fmt(stepStart);
             const endStr = fmt(stepEnd);
             const isClickedStep = clickedStep?.index === i;
@@ -182,7 +201,7 @@ const ProcessTimeline = ({
                               className="flex items-center gap-0.5 text-[10px] text-destructive font-medium hover:underline"
                             >
                               <Undo2 className="h-3 w-3" />
-                              Annulla
+                              {t("proc.annulla")}
                             </button>
                           )}
                           <span className="text-[10px] text-muted-foreground font-mono whitespace-nowrap">
@@ -190,9 +209,9 @@ const ProcessTimeline = ({
                           </span>
                         </div>
                       </div>
-                      {step.durationHours > 0 && (
+                      {steps[i].durationHours > 0 && (
                         <p className="text-[10px] text-primary font-medium mt-0.5">
-                          ⏱ {formatDuration(step.durationHours)}
+                          ⏱ {formatDuration(steps[i].durationHours)}
                           {startStr !== endStr && (
                             <span className="text-muted-foreground ml-1">
                               ({startStr} → {endStr})

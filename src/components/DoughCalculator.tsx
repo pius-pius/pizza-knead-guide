@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import ScheduleDrawer from "./ScheduleDrawer";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 import {
   RECIPES,
   getProcessDuration,
@@ -68,15 +69,16 @@ interface DoughCalculatorProps {
   result: DoughResult;
   input: DoughInput;
   drawerOpen: boolean;
-  setDrawerOpen: (open: boolean) => void;
-  onNavigate?: (tab: string) => void;
+  setDrawerOpen: (b: boolean) => void;
+  onNavigate?: (view: string) => void;
 }
 
 const DoughCalculator = ({
   recipe, setRecipe,
   numPanetti, setNumPanetti,
   pesoPanetto, setPesoPanetto,
-  teglie, tegliaDetails, totalTegliaWeight,
+  teglie, tegliaDetails,
+  totalTegliaWeight,
   addTeglia, removeTeglia, updateTeglia,
   idratazione, setIdratazione,
   maturationHours, setMaturationHours,
@@ -91,26 +93,28 @@ const DoughCalculator = ({
   drawerOpen, setDrawerOpen,
   onNavigate
 }: DoughCalculatorProps) => {
+  const { t, lang } = useI18n();
+  const dateLocale = lang === "it" ? it : undefined;
   const isTeglia = recipe === "teglia_romana" || recipe === "focaccia_genovese";
   const isPane = recipe === "pane_classico";
   const [drawerMode, setDrawerMode] = useState<MaturationMode>(maturationMode);
 
   const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
 
-  const allRecipes: {key: RecipeType | "carica";name: string;disabled?: boolean;}[] = [
-  { key: "napoletana", name: "Napoletana" },
-  { key: "teglia_romana", name: "Pizza in Teglia" },
-  { key: "pane_classico", name: "Pane Classico" },
-  { key: "focaccia_genovese", name: "Focaccia Genovese" },
-  { key: "napoletana_contemporanea", name: "Nap. Contemporanea" },
-  { key: "carica", name: "Carica Ricetta", disabled: true }];
-
+  const allRecipes: {key: RecipeType | "carica"; nameKey: string; disabled?: boolean;}[] = [
+    { key: "napoletana", nameKey: "recipe.napoletana" },
+    { key: "teglia_romana", nameKey: "recipe.teglia_romana" },
+    { key: "pane_classico", nameKey: "recipe.pane_classico" },
+    { key: "focaccia_genovese", nameKey: "recipe.focaccia_genovese" },
+    { key: "napoletana_contemporanea", nameKey: "recipe.napoletana_contemporanea" },
+    { key: "carica", nameKey: "recipe.carica", disabled: true },
+  ];
 
   return (
     <section className="px-4 py-6 space-y-4">
       {/* 1. Recipe selector */}
       <div className="bg-card rounded-2xl p-4 shadow-sm">
-        <p className="font-semibold uppercase tracking-wide mb-3 mx-[70px] text-center text-base text-primary">CHE TIPO DI PIZZA VUOI CUCINARE ?</p>
+        <p className="font-semibold uppercase tracking-wide mb-3 mx-[70px] text-center text-base text-primary">{t("recipe.title")}</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {allRecipes.map((r) =>
           <button
@@ -126,8 +130,8 @@ const DoughCalculator = ({
             )}>
             
               {r.disabled && <Upload className="h-3 w-3 inline mr-1" />}
-              {r.name}
-              {r.disabled && <span className="block text-[9px] opacity-70">Coming soon</span>}
+              {t(r.nameKey as any)}
+              {r.disabled && <span className="block text-[9px] opacity-70">{t("recipe.coming_soon")}</span>}
             </button>
           )}
         </div>
@@ -137,76 +141,76 @@ const DoughCalculator = ({
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-4">
         {isTeglia ?
         <div>
-            <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-center text-primary">SCEGLI IL NUMERO, LA TIPOLOGIA E LA DIMENSIONE DELLE TEGLIE</p>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-3 text-center text-primary">{t("qty.teglia_title")}</p>
             <div className="space-y-3">
-              {tegliaDetails.map((t, i) =>
-            <div key={t.id} className="bg-secondary/50 rounded-xl p-3">
+              {tegliaDetails.map((tg, i) =>
+            <div key={tg.id} className="bg-secondary/50 rounded-xl p-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-foreground">Teglia {i + 1}</span>
+                    <span className="text-xs font-semibold text-foreground">{t("qty.teglia")} {i + 1}</span>
                     {teglie.length > 1 &&
-                <button onClick={() => removeTeglia(t.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                <button onClick={() => removeTeglia(tg.id)} className="text-muted-foreground hover:text-destructive transition-colors">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                 }
                   </div>
                   <div className="flex gap-1.5 mb-2">
                     <button
-                  onClick={() => updateTeglia(t.id, "shape", "rettangolare")}
+                  onClick={() => updateTeglia(tg.id, "shape", "rettangolare")}
                   className={cn("flex-1 py-1.5 rounded-lg text-[10px] font-semibold transition-all text-center",
-                  t.shape === "rettangolare" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground")}>
-                   ▭  Rettangolare</button>
+                  tg.shape === "rettangolare" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground")}>
+                   ▭  {t("qty.rettangolare")}</button>
                     <button
-                  onClick={() => updateTeglia(t.id, "shape", "rotonda")}
+                  onClick={() => updateTeglia(tg.id, "shape", "rotonda")}
                   className={cn("flex-1 py-1.5 rounded-lg text-[10px] font-semibold transition-all",
-                  t.shape === "rotonda" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground")}>
-                  <Circle className="h-2.5 w-2.5 inline mr-0.5" /> Rotonda</button>
+                  tg.shape === "rotonda" ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground")}>
+                  <Circle className="h-2.5 w-2.5 inline mr-0.5" /> {t("qty.rotonda")}</button>
                   </div>
-                  {t.shape === "rettangolare" ?
+                  {tg.shape === "rettangolare" ?
               <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <p className="text-[10px] text-muted-foreground uppercase mb-1">Larghezza (cm)</p>
-                        <input type="number" value={t.width || ""}
-                  onChange={(e) => updateTeglia(t.id, "width", e.target.value === "" ? 0 : Number(e.target.value))}
-                  onBlur={() => { if (t.width < 1) updateTeglia(t.id, "width", 1); }}
+                        <p className="text-[10px] text-muted-foreground uppercase mb-1">{t("qty.larghezza")}</p>
+                        <input type="number" value={tg.width || ""}
+                  onChange={(e) => updateTeglia(tg.id, "width", e.target.value === "" ? 0 : Number(e.target.value))}
+                  onBlur={() => { if (tg.width < 1) updateTeglia(tg.id, "width", 1); }}
                   className="w-full bg-card rounded-lg px-3 py-2 text-sm font-semibold text-foreground outline-none" />
                       </div>
                       <div>
-                        <p className="text-[10px] text-muted-foreground uppercase mb-1">Lunghezza (cm)</p>
-                        <input type="number" value={t.height || ""}
-                  onChange={(e) => updateTeglia(t.id, "height", e.target.value === "" ? 0 : Number(e.target.value))}
-                  onBlur={() => { if (t.height < 1) updateTeglia(t.id, "height", 1); }}
+                        <p className="text-[10px] text-muted-foreground uppercase mb-1">{t("qty.lunghezza")}</p>
+                        <input type="number" value={tg.height || ""}
+                  onChange={(e) => updateTeglia(tg.id, "height", e.target.value === "" ? 0 : Number(e.target.value))}
+                  onBlur={() => { if (tg.height < 1) updateTeglia(tg.id, "height", 1); }}
                   className="w-full bg-card rounded-lg px-3 py-2 text-sm font-semibold text-foreground outline-none" />
                       </div>
                     </div> :
 
               <div>
-                      <p className="text-[10px] text-muted-foreground uppercase mb-1">Diametro (cm)</p>
-                      <input type="number" value={t.diameter || ""}
-                onChange={(e) => updateTeglia(t.id, "diameter", e.target.value === "" ? 0 : Number(e.target.value))}
-                onBlur={() => { if (t.diameter < 1) updateTeglia(t.id, "diameter", 1); }}
+                      <p className="text-[10px] text-muted-foreground uppercase mb-1">{t("qty.diametro")}</p>
+                      <input type="number" value={tg.diameter || ""}
+                onChange={(e) => updateTeglia(tg.id, "diameter", e.target.value === "" ? 0 : Number(e.target.value))}
+                onBlur={() => { if (tg.diameter < 1) updateTeglia(tg.id, "diameter", 1); }}
                 className="w-full bg-card rounded-lg px-3 py-2 text-sm font-semibold text-foreground outline-none" />
                     </div>
               }
-                  <p className="text-[10px] text-muted-foreground mt-1.5">{t.area} cm²</p>
+                  <p className="text-[10px] text-muted-foreground mt-1.5">{tg.area} cm²</p>
                 </div>
             )}
             </div>
             <Button variant="outline" onClick={addTeglia} className="w-full rounded-xl mt-3">
-              <Plus className="h-4 w-4 mr-2" /> Aggiungi teglia
+              <Plus className="h-4 w-4 mr-2" /> {t("qty.aggiungi_teglia")}
             </Button>
             <div className="bg-primary/5 rounded-xl p-3 border border-primary/10 mt-3 space-y-1">
               <div className="flex justify-between items-center">
-                <p className="text-xs text-muted-foreground">Peso totale impasto</p>
+                <p className="text-xs text-muted-foreground">{t("qty.peso_totale")}</p>
                 <span className="text-sm font-bold text-primary">{totalTegliaWeight}g</span>
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Consigliato per ~{calculatePersone(totalTegliaWeight)} persone
+                {t("qty.consigliato_persone", { n: calculatePersone(totalTegliaWeight) })}
               </p>
             </div>
           </div> :
         isPane ?
         <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Peso pane</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t("qty.peso_pane")}</p>
             <div className="flex gap-2">
               {BREAD_WEIGHTS.map((w) =>
             <button key={w}
@@ -227,11 +231,11 @@ const DoughCalculator = ({
           <div className="mt-2">
                 <input type="number" value={breadCustomWeight}
             onChange={(e) => {const v = Math.max(100, Number(e.target.value));setBreadCustomWeight(v);setPesoPanetto(v);}}
-            className="w-full bg-secondary rounded-xl px-3 py-2 text-sm font-semibold text-foreground outline-none" placeholder="Peso in grammi" />
+            className="w-full bg-secondary rounded-xl px-3 py-2 text-sm font-semibold text-foreground outline-none" placeholder={lang === "it" ? "Peso in grammi" : "Weight in grams"} />
               </div>
           }
             <div className="flex items-center gap-3 mt-3">
-              <p className="text-xs text-muted-foreground">Quantità</p>
+              <p className="text-xs text-muted-foreground">{t("qty.quantita")}</p>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="icon" className="h-8 w-8 rounded-full"
               onClick={() => setNumPanetti(Math.max(1, numPanetti - 1))}>
@@ -248,7 +252,7 @@ const DoughCalculator = ({
 
         <>
             <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">QUANTI PANETTI/PIZZE ?</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t("qty.quanti_panetti")}</p>
               <div className="flex items-center justify-between">
                 <Button variant="outline" size="icon" className="h-10 w-10 rounded-full"
               onClick={() => setNumPanetti(Math.max(1, numPanetti - 1))}>
@@ -262,7 +266,7 @@ const DoughCalculator = ({
               </div>
             </div>
             <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Peso panetto</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">{t("qty.peso_panetto")}</p>
               <div className="flex gap-2">
                 {[200, 250, 280, 300].map((w) =>
               <button key={w} onClick={() => setPesoPanetto(w)}
@@ -277,9 +281,9 @@ const DoughCalculator = ({
         }
       </div>
 
-      {/* 3. Schedule — "Dimmi quando vuoi mangiare" */}
+      {/* 3. Schedule */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
-        <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">🍽️ Dimmi quando vuoi mangiare</p>
+        <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">{t("sched.dimmi_quando")}</p>
         {(() => {
           const now = new Date();
           const scheduled = scheduleDate ? new Date(scheduleDate) : now;
@@ -301,30 +305,30 @@ const DoughCalculator = ({
               <button onClick={() => {setDrawerMode("quando_mangio");setMaturationMode("quando_mangio");setDrawerOpen(true);}} className="w-full bg-primary/5 rounded-xl p-3 border border-primary/10 text-left hover:bg-primary/10 transition-colors active:scale-[0.98]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] text-muted-foreground uppercase">Inizia preparazione</p>
+                    <p className="text-[10px] text-muted-foreground uppercase">{t("sched.inizia_prep")}</p>
                     <p className="text-sm font-bold text-primary">
-                      {format(startTime, "EEE d MMM, HH:mm", { locale: it })}
+                      {format(startTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground uppercase">Durata</p>
+                    <p className="text-[10px] text-muted-foreground uppercase">{t("sched.durata")}</p>
                     <p className="text-xs font-bold text-foreground">
                       {durationH}h{durationM > 0 ? ` ${durationM}m` : ""}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] text-muted-foreground uppercase">Mangio</p>
+                    <p className="text-[10px] text-muted-foreground uppercase">{t("sched.mangio")}</p>
                     <p className="text-sm font-bold text-foreground">
-                      {format(endTime, "EEE d MMM, HH:mm", { locale: it })}
+                      {format(endTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
                     </p>
                   </div>
                 </div>
-                <p className="text-[10px] text-primary/60 text-center mt-2">Tocca per modificare l'orario ☝️</p>
+                <p className="text-[10px] text-primary/60 text-center mt-2">{t("sched.tocca_modificare")}</p>
               </button>
               {processIncompatible && (
                 <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
                   <p className="text-[11px] text-destructive leading-relaxed">
-                    ⚠️ Durata del processo non compatibile con la data/ora di consumazione selezionata: diminuire ore di maturazione o posticipare l'orario.
+                    {t("sched.incompatibile")}
                   </p>
                 </div>
               )}
@@ -337,7 +341,7 @@ const DoughCalculator = ({
         <TooltipProvider>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1.5">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">ORE DI LIEVITAZIONE/MATURAZIONE</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("mat.ore")}</p>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button type="button" className="inline-flex">
@@ -345,7 +349,7 @@ const DoughCalculator = ({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[250px]">
-                  <p className="text-xs">Maturazione = Lievitazione per impasti diretti a temperatura ambiente</p>
+                  <p className="text-xs">{t("mat.info")}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -363,7 +367,7 @@ const DoughCalculator = ({
         {maturationHours > 12 &&
         <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
             <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
-              ⚠️ Processo avanzato: limitare maturazione a 12h o impostare <strong>Fermo Frigo</strong> in Opzioni avanzate (utenti esperti).
+              {t("mat.avviso_12h")}
             </p>
           </div>
         }
@@ -387,7 +391,7 @@ const DoughCalculator = ({
           <TooltipProvider>
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center gap-1.5">
-                <p className="text-xs text-muted-foreground">Temperatura ambiente</p>
+                <p className="text-xs text-muted-foreground">{t("mat.temp_ambiente")}</p>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button type="button" className="inline-flex">
@@ -395,7 +399,7 @@ const DoughCalculator = ({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-[250px]">
-                    <p className="text-xs">Indica la temperatura del locale in cui riposa l'impasto. Influenza la quantità di lievito necessaria e la temperatura dell'acqua da usare.</p>
+                    <p className="text-xs">{t("mat.temp_info")}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -420,10 +424,10 @@ const DoughCalculator = ({
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium text-muted-foreground bg-secondary rounded-xl">
           
           <Settings className="h-4 w-4" />
-          <span>Opzioni avanzate</span>
+          <span>{t("btn.opzioni_avanzate")}</span>
         </button>
         <Button className="flex-1 rounded-xl h-11 text-sm font-bold" onClick={() => onNavigate?.("dosi")}>
-          Vai alle Dosi <ArrowRight className="h-4 w-4 ml-1.5" />
+          {t("btn.vai_dosi")} <ArrowRight className="h-4 w-4 ml-1.5" />
         </Button>
       </div>
     </section>);
