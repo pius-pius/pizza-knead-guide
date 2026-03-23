@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { BookOpen, Scale, ListOrdered } from "lucide-react";
+import { BookOpen, Scale, ListOrdered, Globe } from "lucide-react";
 import { format } from "date-fns";
+import { useI18n } from "@/lib/i18n";
 import heroDough from "@/assets/hero-dough.jpg";
 import DoughCalculator from "@/components/DoughCalculator";
 import AdvancedOptions from "@/components/AdvancedOptions";
@@ -33,12 +34,7 @@ export type MaturationMode = "quando_inizio" | "quando_mangio";
 type View = "ricetta" | "avanzate" | "dosi" | "processo";
 type Tab = "ricetta" | "dosi" | "processo";
 
-const tabs: { id: Tab; label: string; icon: typeof BookOpen }[] = [
-  { id: "ricetta", label: "Ricetta", icon: BookOpen },
-  { id: "dosi", label: "Dosi", icon: Scale },
-  { id: "processo", label: "Processo", icon: ListOrdered },
-];
-
+// tabs will be built inside component using t()
 let tegliaNextId = 2;
 
 const getDefaultScheduleDate = () => {
@@ -49,6 +45,12 @@ const getDefaultScheduleDate = () => {
 };
 
 const Index = () => {
+  const { t, lang, setLang } = useI18n();
+  const tabs: { id: Tab; label: string; icon: typeof BookOpen }[] = [
+    { id: "ricetta", label: t("tab.ricetta"), icon: BookOpen },
+    { id: "dosi", label: t("tab.dosi"), icon: Scale },
+    { id: "processo", label: t("tab.processo"), icon: ListOrdered },
+  ];
   const [activeView, setActiveView] = useState<View>("ricetta");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -195,7 +197,7 @@ const Index = () => {
 
   const saveRecipe = useCallback(() => {
     const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
-    const name = `Ricetta ${saved.length + 1} - ${format(new Date(), "dd/MM HH:mm")}`;
+    const name = `${t("save.ricetta")} ${saved.length + 1} - ${format(new Date(), "dd/MM HH:mm")}`;
     saved.push({
       name, recipe, numPanetti, pesoPanetto, teglie, idratazione, yeastType,
       lmIdratazione, maturationHours, autolisiHours, tAmbiente,
@@ -203,7 +205,7 @@ const Index = () => {
       salePercent, olioPercent, maltoPercent, lmPercent, flourMode, flours, prefermentoType,
     });
     localStorage.setItem("savedRecipes", JSON.stringify(saved));
-    alert(`"${name}" salvata!`);
+    alert(`"${name}" ${t("save.salvata")}`);
   }, [
     recipe, numPanetti, pesoPanetto, teglie, idratazione, yeastType,
     lmIdratazione, maturationHours, autolisiHours, tAmbiente,
@@ -223,16 +225,23 @@ const Index = () => {
       <header className="relative h-36 overflow-hidden flex-shrink-0">
         <img
           src={heroDough}
-          alt="Impasto per pizza su tagliere di legno con farina"
+          alt={lang === "it" ? "Impasto per pizza su tagliere di legno con farina" : "Pizza dough on a wooden board with flour"}
           className="w-full h-full object-cover"
           loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/30 to-foreground/70 flex flex-col justify-end p-4">
+          <button
+            onClick={() => setLang(lang === "it" ? "en" : "it")}
+            className="absolute top-3 right-3 flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
+          >
+            <Globe className="h-3.5 w-3.5" />
+            {lang === "it" ? "EN" : "IT"}
+          </button>
           <h1 className="text-2xl font-bold text-primary-foreground leading-tight text-center">
-            Pizza Perfetta 🍕
+            {t("app.title")}
           </h1>
           <p className="text-primary-foreground/80 text-xs mt-0.5 text-center">
-            Calcolatore professionale per impasti
+            {t("app.subtitle")}
           </p>
         </div>
       </header>

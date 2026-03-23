@@ -8,6 +8,7 @@ import {
   type DoughInput,
   type PrefermentoType,
 } from "@/lib/dough-calculator";
+import { useI18n } from "@/lib/i18n";
 import type { FlourItem } from "./DoughCalculator";
 
 interface DoughResultsProps {
@@ -20,7 +21,15 @@ interface DoughResultsProps {
   prefermentoType: PrefermentoType;
 }
 
+const MIXING_KEYS: Record<MixingMethod, string> = {
+  manuale: "mix.manuale",
+  forcella: "mix.forcella",
+  spirale: "mix.spirale",
+  braccia_tuffanti: "mix.braccia_tuffanti",
+};
+
 const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMixingMethod, prefermentoType }: DoughResultsProps) => {
+  const { t } = useI18n();
 
   const result = useMemo(() => calculateDough(input), [input]);
 
@@ -37,25 +46,28 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
     }));
   }, [flourMode, flours, result.farina]);
 
+  const yeastName = input.yeastType === "LDB" ? t("dosi.ldb") : t("dosi.lm");
+  const prefLabel = prefermentoType === "biga" ? "biga" : "poolish";
+
   const ingredients = [
     ...(flourIngredients
       ? flourIngredients.map(f => ({ name: f.name, amount: `${f.weight}g`, icon: "🌾", show: true }))
-      : [{ name: "Farina totale", amount: `${result.farina}g`, icon: "🌾", show: true }]),
-    { name: "Acqua", amount: `${result.acqua}g`, icon: "💧", show: true },
-    { name: input.yeastType === "LDB" ? "Lievito di birra" : "Lievito madre", amount: `${result.lievito}g`, icon: "🫧", show: true },
-    { name: "Sale", amount: `${result.sale}g`, icon: "🧂", show: true },
-    { name: "Olio EVO", amount: `${result.olio}g`, icon: "🫒", show: result.olio > 0 },
-    { name: "Malto", amount: `${result.malto}g`, icon: "🍯", show: result.malto > 0 },
-    { name: "Pasta di riporto", amount: `${result.pastaDiRiporto}g`, icon: "🥖", show: result.pastaDiRiporto > 0 },
+      : [{ name: t("dosi.farina_totale"), amount: `${result.farina}g`, icon: "🌾", show: true }]),
+    { name: t("dosi.acqua"), amount: `${result.acqua}g`, icon: "💧", show: true },
+    { name: yeastName, amount: `${result.lievito}g`, icon: "🫧", show: true },
+    { name: t("dosi.sale"), amount: `${result.sale}g`, icon: "🧂", show: true },
+    { name: t("dosi.olio"), amount: `${result.olio}g`, icon: "🫒", show: result.olio > 0 },
+    { name: t("dosi.malto"), amount: `${result.malto}g`, icon: "🍯", show: result.malto > 0 },
+    { name: t("dosi.pasta_riporto"), amount: `${result.pastaDiRiporto}g`, icon: "🥖", show: result.pastaDiRiporto > 0 },
   ].filter(i => i.show);
 
   return (
     <section className="px-4 py-6 space-y-4">
-      <h2 className="text-2xl font-bold text-center mb-1">Dosi</h2>
+      <h2 className="text-2xl font-bold text-center mb-1">{t("dosi.title")}</h2>
 
       {/* Total */}
       <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 text-center">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Impasto totale</p>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("dosi.impasto_totale")}</p>
         <p className="text-3xl font-display font-bold text-primary mt-1">{result.totaleImpasto}g</p>
       </div>
 
@@ -79,9 +91,9 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
             {prefermentoType === "biga" ? "Biga" : "Poolish"}
           </p>
           {[
-            { name: `Farina ${prefermentoType === "biga" ? "biga" : "poolish"}`, amount: `${result.poolishFarina}g`, icon: "🌾" },
-            { name: `Acqua ${prefermentoType === "biga" ? "biga" : "poolish"}`, amount: `${result.poolishAcqua}g`, icon: "💧" },
-            { name: `Lievito ${prefermentoType === "biga" ? "biga" : "poolish"}`, amount: `${result.poolishLievito}g`, icon: "🫧" },
+            { name: t(prefermentoType === "biga" ? "dosi.farina_biga" : "dosi.farina_poolish"), amount: `${result.poolishFarina}g`, icon: "🌾" },
+            { name: t(prefermentoType === "biga" ? "dosi.acqua_biga" : "dosi.acqua_poolish"), amount: `${result.poolishAcqua}g`, icon: "💧" },
+            { name: t(prefermentoType === "biga" ? "dosi.lievito_biga" : "dosi.lievito_poolish"), amount: `${result.poolishLievito}g`, icon: "🫧" },
           ].map((ing) => (
             <div key={ing.name} className="bg-card rounded-xl p-3.5 shadow-sm flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -96,20 +108,20 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
 
       {/* Water temperature */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-4">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Temperatura acqua consigliata</p>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("dosi.temp_acqua")}</p>
 
         {/* Mixing method selector */}
         <div>
-          <p className="text-[10px] text-muted-foreground uppercase mb-2">Metodo di impasto</p>
+          <p className="text-[10px] text-muted-foreground uppercase mb-2">{t("dosi.metodo_impasto")}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
-            {(Object.entries(MIXING_METHOD_LABELS) as [MixingMethod, string][]).map(([key, label]) => (
+            {(Object.keys(MIXING_METHOD_LABELS) as MixingMethod[]).map((key) => (
               <button key={key} onClick={() => setMixingMethod(key)}
                 className={`py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
                   mixingMethod === key
                     ? "bg-primary text-primary-foreground shadow-md"
                     : "bg-secondary text-secondary-foreground"
                 }`}>
-                {label}
+                {t(MIXING_KEYS[key] as any)}
               </button>
             ))}
           </div>
@@ -129,11 +141,11 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
             <span className="absolute text-2xl font-display font-bold">{tAcqua}°C</span>
           </div>
           <p className="text-[10px] text-muted-foreground mt-1">
-            T ambiente: {tAmbiente}°C • T impasto desiderata: {tDesiderata}°C
+            {t("dosi.t_ambiente")}: {tAmbiente}°C • {t("dosi.t_impasto")}: {tDesiderata}°C
           </p>
           {tAcqua < 0 && (
             <p className="text-xs text-destructive mt-2 font-medium">
-              ⚠️ Temperatura negativa! Usa acqua con ghiaccio.
+              {t("dosi.temp_negativa")}
             </p>
           )}
         </div>

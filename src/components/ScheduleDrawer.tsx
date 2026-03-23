@@ -7,6 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 import type { MaturationMode } from "@/pages/Index";
 
 interface ScheduleDrawerProps {
@@ -31,18 +32,21 @@ const ScheduleDrawer = ({
   scheduleMinute, setScheduleMinute,
   processDuration,
 }: ScheduleDrawerProps) => {
+  const { t, lang } = useI18n();
+  const dateLocale = lang === "it" ? it : undefined;
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[85vh]">
         <DrawerHeader className="pb-2">
           <DrawerTitle className="text-center text-base">
-            {maturationMode === "quando_inizio" ? "Quando vuoi iniziare?" : "Quando vuoi mangiare?"}
+            {maturationMode === "quando_inizio" ? t("drawer.quando_inizio") : t("drawer.quando_mangio")}
           </DrawerTitle>
         </DrawerHeader>
         <div className="px-4 space-y-4 pb-2">
           <div>
             <p className="text-xs text-muted-foreground mb-1.5">
-              {maturationMode === "quando_inizio" ? "Giorno di inizio" : "Giorno in cui mangio"}
+              {maturationMode === "quando_inizio" ? t("drawer.giorno_inizio") : t("drawer.giorno_mangio")}
             </p>
             <Popover>
               <PopoverTrigger asChild>
@@ -55,8 +59,8 @@ const ScheduleDrawer = ({
                 >
                   <CalendarIcon className="h-4 w-4 mr-2" />
                   {scheduleDate
-                    ? format(scheduleDate, "EEEE d MMMM yyyy", { locale: it })
-                    : "Scegli il giorno"}
+                    ? format(scheduleDate, "EEEE d MMMM yyyy", { locale: dateLocale })
+                    : t("drawer.scegli_giorno")}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -72,7 +76,7 @@ const ScheduleDrawer = ({
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1.5">
-              {maturationMode === "quando_inizio" ? "Ora di inizio" : "Ora di cottura"}
+              {maturationMode === "quando_inizio" ? t("drawer.ora_inizio") : t("drawer.ora_cottura")}
             </p>
             <div className="flex gap-2 items-center">
               <select
@@ -107,13 +111,13 @@ const ScheduleDrawer = ({
             return (
               <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">Durata processo</p>
+                  <p className="text-xs text-muted-foreground">{t("drawer.durata_processo")}</p>
                   <span className="text-sm font-bold text-primary">{Math.round(processDuration)}h</span>
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1">
                   {isInizio
-                    ? `Pronto ${format(targetTime, "EEEE d/MM 'alle' HH:mm", { locale: it })}`
-                    : `Inizia preparazione ${format(targetTime, "EEEE d/MM 'alle' HH:mm", { locale: it })}`}
+                    ? `${t("drawer.pronto")} ${format(targetTime, "EEEE d/MM 'alle' HH:mm", { locale: dateLocale })}`
+                    : `${t("drawer.inizia_prep")} ${format(targetTime, "EEEE d/MM 'alle' HH:mm", { locale: dateLocale })}`}
                 </p>
               </div>
             );
@@ -121,7 +125,7 @@ const ScheduleDrawer = ({
         </div>
         <DrawerFooter className="pt-2">
           <Button className="w-full rounded-xl h-11 font-bold" onClick={() => onOpenChange(false)}>
-            <Check className="h-4 w-4 mr-2" /> Conferma
+            <Check className="h-4 w-4 mr-2" /> {t("btn.conferma")}
           </Button>
         </DrawerFooter>
       </DrawerContent>
