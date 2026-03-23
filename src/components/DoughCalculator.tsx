@@ -414,7 +414,7 @@ const DoughCalculator = ({
       </div>
 
       {/* 4. Bottom buttons */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <button
           onClick={() => onNavigate?.("avanzate")}
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium text-muted-foreground bg-secondary rounded-xl">
