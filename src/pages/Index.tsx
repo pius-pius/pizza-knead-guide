@@ -45,6 +45,12 @@ const getDefaultScheduleDate = () => {
 };
 
 const Index = () => {
+  const { t, lang, setLang } = useI18n();
+  const tabs: { id: Tab; label: string; icon: typeof BookOpen }[] = [
+    { id: "ricetta", label: t("tab.ricetta"), icon: BookOpen },
+    { id: "dosi", label: t("tab.dosi"), icon: Scale },
+    { id: "processo", label: t("tab.processo"), icon: ListOrdered },
+  ];
   const [activeView, setActiveView] = useState<View>("ricetta");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
