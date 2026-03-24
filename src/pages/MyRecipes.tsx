@@ -131,8 +131,8 @@ const MyRecipes = () => {
                 </div>
               </div>
               <div className="flex gap-3 text-[10px] text-muted-foreground">
-                <span>{(r.payload as Record<string,unknown>)?.numPanetti as number ?? r.num_panetti ?? '?'} × {(r.payload as Record<string,unknown>)?.pesoPanetto as number ?? r.peso_panetto ?? '?'}g</span>
-                <span>{(r.payload as Record<string,unknown>)?.idratazione as number ?? r.idratazione ?? '?'}%</span>
+                <span>{r.num_panetti ?? '?'} × {r.peso_panetto ?? '?'}g</span>
+                <span>{r.idratazione ?? '?'}%</span>
                 <span>{r.maturation_hours}h</span>
                 <span className="ml-auto">{new Date(r.updated_at).toLocaleDateString()}</span>
               </div>
