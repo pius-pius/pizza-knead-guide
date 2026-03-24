@@ -140,7 +140,7 @@ export function rowToState(row: SavedRecipe): RecipeFormState {
     pastaDiRiporto: row.pasta_di_riporto ?? 0,
     pastaDiRiportoIdratazione: row.pasta_di_riporto_idratazione ?? 50,
     fermoFrigoHours: row.fermo_frigo_hours ?? 0,
-    autolisiHours: row.autolisi_hours ?? 0,
+    autolisiHours: row.autolysis_hours ?? 0,
     tAmbiente: row.t_ambiente ?? 22,
     flourMode: (row.flour_mode || "mono") as "mono" | "mix",
     flours: (row.flours as FlourItem[]) || [
