@@ -26,7 +26,7 @@ export interface SavedRecipe {
   pasta_di_riporto: number;
   pasta_di_riporto_idratazione: number;
   fermo_frigo_hours: number;
-  autolisi_hours: number;
+  autolysis_hours: number;
   t_ambiente: number;
   flour_mode: string;
   flours: FlourItem[] | null;
