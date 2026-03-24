@@ -104,8 +104,6 @@ function stateToRow(name: string, state: RecipeFormState, userId: string) {
     flours: state.flours,
     lm_percent: state.lmPercent,
     lm_custom_active: state.lmCustomActive,
-    bread_custom: state.breadCustom,
-    bread_custom_weight: state.breadCustomWeight,
     maturation_mode: state.maturationMode,
     schedule_date: state.scheduleDate?.toISOString() || null,
     schedule_hour: state.scheduleHour,
