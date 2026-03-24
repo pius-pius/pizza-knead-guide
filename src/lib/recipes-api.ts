@@ -98,7 +98,7 @@ function stateToRow(name: string, state: RecipeFormState, userId: string) {
     oil_percentage: state.olioPercent,
     malt_percentage: state.maltoPercent,
     old_dough_grams: state.pastaDiRiporto,
-    flour_mode: state.flourMode,
+    flour_mode: state.flourMode === "mix" ? "mix_di_farine" : "monofarina",
     mixing_method: state.mixingMethod,
     ambient_temperature: state.tAmbiente,
     start_datetime: state.scheduleDate?.toISOString() || null,
