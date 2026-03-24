@@ -35,8 +35,6 @@ export interface SavedRecipe {
   flours?: FlourItem[] | null;
   lm_percent?: number;
   lm_custom_active?: boolean;
-  bread_custom?: boolean;
-  bread_custom_weight?: number;
   maturation_mode?: string;
   schedule_date?: string | null;
   schedule_hour?: number;
