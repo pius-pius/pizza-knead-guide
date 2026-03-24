@@ -16,8 +16,8 @@ export interface SavedRecipe {
   created_at: string;
   updated_at: string;
   recipe?: string;
-  num_panetti?: number;
-  peso_panetto?: number;
+  quantity?: number;
+  dough_ball_weight?: number;
   idratazione?: number;
   lm_idratazione?: number;
   sale_percent?: number;
