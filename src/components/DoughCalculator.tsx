@@ -92,7 +92,8 @@ const DoughCalculator = ({
   breadCustomWeight, setBreadCustomWeight,
   result, input,
   drawerOpen, setDrawerOpen,
-  onNavigate
+  onNavigate,
+  onSave
 }: DoughCalculatorProps) => {
   const { t, lang } = useI18n();
   const dateLocale = lang === "it" ? it : undefined;
