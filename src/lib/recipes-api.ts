@@ -26,7 +26,7 @@ export interface SavedRecipe {
   pasta_di_riporto: number;
   pasta_di_riporto_idratazione: number;
   fermo_frigo_hours: number;
-  autolisi_hours: number;
+  autolysis_hours: number;
   t_ambiente: number;
   flour_mode: string;
   flours: FlourItem[] | null;
@@ -103,7 +103,7 @@ function stateToRow(name: string, state: RecipeFormState, userId: string) {
     pasta_di_riporto: state.pastaDiRiporto,
     pasta_di_riporto_idratazione: state.pastaDiRiportoIdratazione,
     fermo_frigo_hours: state.fermoFrigoHours,
-    autolisi_hours: state.autolisiHours,
+    autolysis_hours: state.autolisiHours,
     t_ambiente: state.tAmbiente,
     flour_mode: state.flourMode,
     flours: state.flours,
@@ -140,7 +140,7 @@ export function rowToState(row: SavedRecipe): RecipeFormState {
     pastaDiRiporto: row.pasta_di_riporto ?? 0,
     pastaDiRiportoIdratazione: row.pasta_di_riporto_idratazione ?? 50,
     fermoFrigoHours: row.fermo_frigo_hours ?? 0,
-    autolisiHours: row.autolisi_hours ?? 0,
+    autolisiHours: row.autolysis_hours ?? 0,
     tAmbiente: row.t_ambiente ?? 22,
     flourMode: (row.flour_mode || "mono") as "mono" | "mix",
     flours: (row.flours as FlourItem[]) || [
