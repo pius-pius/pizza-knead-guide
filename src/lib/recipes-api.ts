@@ -16,8 +16,8 @@ export interface SavedRecipe {
   created_at: string;
   updated_at: string;
   recipe?: string;
-  num_panetti?: number;
-  peso_panetto?: number;
+  quantity?: number;
+  dough_ball_weight?: number;
   idratazione?: number;
   lm_idratazione?: number;
   sale_percent?: number;
@@ -87,8 +87,8 @@ function stateToRow(name: string, state: RecipeFormState, userId: string) {
     mixing_method: state.mixingMethod,
     flour_mode: state.flourMode,
     autolysis_hours: state.autolisiHours,
-    num_panetti: state.numPanetti,
-    peso_panetto: state.pesoPanetto,
+    quantity: state.numPanetti,
+    dough_ball_weight: state.pesoPanetto,
     idratazione: state.idratazione,
     lm_idratazione: state.lmIdratazione,
     sale_percent: state.salePercent,
@@ -119,8 +119,8 @@ function stateToRow(name: string, state: RecipeFormState, userId: string) {
 export function rowToState(row: SavedRecipe): RecipeFormState {
   return {
     recipe: (row.recipe_type) as RecipeType,
-    numPanetti: row.num_panetti ?? 4,
-    pesoPanetto: row.peso_panetto ?? 250,
+    numPanetti: row.quantity ?? 4,
+    pesoPanetto: row.dough_ball_weight ?? 250,
     idratazione: row.idratazione ?? 66,
     yeastType: (row.yeast_type || "LDB") as YeastType,
     lmIdratazione: (row.lm_idratazione === 100 ? 100 : 50) as 50 | 100,
