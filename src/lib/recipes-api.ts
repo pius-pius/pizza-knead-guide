@@ -13,10 +13,8 @@ export interface SavedRecipe {
   mixing_method: string;
   flour_mode: string;
   autolysis_hours: number;
-  payload: Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
-  // Legacy columns (may not exist in DB, used for backward compat in rowToState)
   recipe?: string;
   num_panetti?: number;
   peso_panetto?: number;
@@ -43,8 +41,6 @@ export interface SavedRecipe {
   schedule_date?: string | null;
   schedule_hour?: number;
   schedule_minute?: number;
-  data?: Record<string, unknown> | null;
-  settings?: Record<string, unknown> | null;
 }
 
 export interface RecipeFormState {
