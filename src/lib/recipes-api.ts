@@ -131,7 +131,7 @@ export function rowToState(row: SavedRecipe): RecipeFormState {
     fermoFrigoHours: row.cold_retard_hours ?? 0,
     autolisiHours: row.autolysis_hours ?? 0,
     tAmbiente: row.ambient_temperature ?? 22,
-    flourMode: (row.flour_mode || "mono") as "mono" | "mix",
+    flourMode: (row.flour_mode === "mix_di_farine" ? "mix" : "mono") as "mono" | "mix",
     flours: [
       { id: 1, name: "Farina 1", w: 300, percent: 50 },
       { id: 2, name: "Farina 2", w: 200, percent: 50 },
