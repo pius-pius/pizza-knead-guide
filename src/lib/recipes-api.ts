@@ -103,7 +103,7 @@ function stateToRow(name: string, state: RecipeFormState, userId: string) {
     pasta_di_riporto: state.pastaDiRiporto,
     pasta_di_riporto_idratazione: state.pastaDiRiportoIdratazione,
     fermo_frigo_hours: state.fermoFrigoHours,
-    autolisi_hours: state.autolisiHours,
+    autolysis_hours: state.autolisiHours,
     t_ambiente: state.tAmbiente,
     flour_mode: state.flourMode,
     flours: state.flours,
