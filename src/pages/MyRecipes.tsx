@@ -116,7 +116,7 @@ const MyRecipes = () => {
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-sm truncate">{r.recipe_name}</h3>
-                  <p className="text-xs text-muted-foreground">{recipeLabel(r.recipe_type || r.recipe)}</p>
+                  <p className="text-xs text-muted-foreground">{recipeLabel(r.recipe_type)}</p>
                 </div>
                 <div className="flex gap-1 ml-2 flex-shrink-0">
                   <button onClick={() => handleLoad(r.id)} className="p-1.5 rounded-lg hover:bg-primary/10 text-primary transition-colors" title={t("myrecipes.load")}>
