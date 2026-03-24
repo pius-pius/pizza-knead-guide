@@ -71,6 +71,7 @@ interface DoughCalculatorProps {
   drawerOpen: boolean;
   setDrawerOpen: (b: boolean) => void;
   onNavigate?: (view: string) => void;
+  onSave?: () => void;
 }
 
 const DoughCalculator = ({
