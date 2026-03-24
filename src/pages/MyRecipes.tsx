@@ -132,7 +132,7 @@ const MyRecipes = () => {
               </div>
               <div className="flex gap-3 text-[10px] text-muted-foreground">
                 <span>{r.quantity ?? '?'} × {r.dough_ball_weight ?? '?'}g</span>
-                <span>{r.idratazione ?? '?'}%</span>
+                <span>{r.hydration_percentage ?? '?'}%</span>
                 <span>{r.maturation_hours}h</span>
                 <span className="ml-auto">{new Date(r.updated_at).toLocaleDateString()}</span>
               </div>
