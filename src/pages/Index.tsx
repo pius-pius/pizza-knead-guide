@@ -1,7 +1,11 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { BookOpen, Scale, ListOrdered, Globe } from "lucide-react";
+import { BookOpen, Scale, ListOrdered, Globe, User, LogOut, BookOpenCheck, Save, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth-context";
+import { saveRecipeToDb, fetchRecipeById, rowToState, type RecipeFormState } from "@/lib/recipes-api";
+import { toast } from "@/hooks/use-toast";
 import heroDough from "@/assets/hero-dough.jpg";
 import DoughCalculator from "@/components/DoughCalculator";
 import AdvancedOptions from "@/components/AdvancedOptions";
@@ -34,7 +38,6 @@ export type MaturationMode = "quando_inizio" | "quando_mangio";
 type View = "ricetta" | "avanzate" | "dosi" | "processo";
 type Tab = "ricetta" | "dosi" | "processo";
 
-// tabs will be built inside component using t()
 let tegliaNextId = 2;
 
 const getDefaultScheduleDate = () => {
@@ -46,6 +49,10 @@ const getDefaultScheduleDate = () => {
 
 const Index = () => {
   const { t, lang, setLang } = useI18n();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const tabs: { id: Tab; label: string; icon: typeof BookOpen }[] = [
     { id: "ricetta", label: t("tab.ricetta"), icon: BookOpen },
     { id: "dosi", label: t("tab.dosi"), icon: Scale },
@@ -91,6 +98,9 @@ const Index = () => {
   const [breadCustomWeight, setBreadCustomWeight] = useState(1000);
   const [mixingMethod, setMixingMethod] = useState<MixingMethod>("manuale");
   const [lmCustomActive, setLmCustomActive] = useState(false);
+  const [savingRecipe, setSavingRecipe] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [saveRecipeName, setSaveRecipeName] = useState("");
 
   // Apply recipe defaults
   useEffect(() => {
@@ -101,6 +111,53 @@ const Index = () => {
     setMaltoPercent(r.maltoPercent);
     setYeastType(r.defaultYeastType);
   }, [recipe]);
+
+  // Load recipe from URL param
+  useEffect(() => {
+    const loadId = searchParams.get("load");
+    if (!loadId) return;
+    fetchRecipeById(loadId).then(({ data }) => {
+      if (!data) return;
+      const s = rowToState(data);
+      applyRecipeState(s);
+      setSearchParams({}, { replace: true });
+      toast({ title: t("myrecipes.loaded") });
+    });
+  }, []);
+
+  const applyRecipeState = (s: RecipeFormState) => {
+    setRecipe(s.recipe);
+    setNumPanetti(s.numPanetti);
+    setPesoPanetto(s.pesoPanetto);
+    setIdratazione(s.idratazione);
+    setYeastType(s.yeastType);
+    setLmIdratazione(s.lmIdratazione);
+    setMaturationHours(s.maturationHours);
+    setSalePercent(s.salePercent);
+    setOlioPercent(s.olioPercent);
+    setMaltoPercent(s.maltoPercent);
+    setTeglie(s.teglie);
+    setPoolishPercent(s.poolishPercent);
+    setPoolishMaturationHours(s.poolishMaturationHours);
+    setPrefermentoType(s.prefermentoType);
+    setTempPrefermento(s.tempPrefermento);
+    setPastaDiRiporto(s.pastaDiRiporto);
+    setPastaDiRiportoIdratazione(s.pastaDiRiportoIdratazione);
+    setFermoFrigoHours(s.fermoFrigoHours);
+    setAutolisiHours(s.autolisiHours);
+    setTAmbiente(s.tAmbiente);
+    setFlourMode(s.flourMode);
+    setFlours(s.flours);
+    setLmPercent(s.lmPercent);
+    setLmCustomActive(s.lmCustomActive);
+    setBreadCustom(s.breadCustom);
+    setBreadCustomWeight(s.breadCustomWeight);
+    setMixingMethod(s.mixingMethod);
+    setMaturationMode(s.maturationMode);
+    if (s.scheduleDate) setScheduleDate(s.scheduleDate);
+    setScheduleHour(s.scheduleHour);
+    setScheduleMinute(s.scheduleMinute);
+  };
 
   // Teglia calculations
   const currentTegliaCoeff = RECIPES[recipe].tegliaCoeff ?? TEGLIA_COEFF;
@@ -195,28 +252,41 @@ const Index = () => {
     []
   );
 
-  const saveRecipe = useCallback(() => {
-    const saved = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
-    const name = `${t("save.ricetta")} ${saved.length + 1} - ${format(new Date(), "dd/MM HH:mm")}`;
-    saved.push({
-      name, recipe, numPanetti, pesoPanetto, teglie, idratazione, yeastType,
-      lmIdratazione, maturationHours, autolisiHours, tAmbiente,
-      poolishPercent, poolishMaturationHours, pastaDiRiporto, pastaDiRiportoIdratazione,
-      salePercent, olioPercent, maltoPercent, lmPercent, flourMode, flours, prefermentoType,
-    });
-    localStorage.setItem("savedRecipes", JSON.stringify(saved));
-    alert(`"${name}" ${t("save.salvata")}`);
-  }, [
-    recipe, numPanetti, pesoPanetto, teglie, idratazione, yeastType,
-    lmIdratazione, maturationHours, autolisiHours, tAmbiente,
-    poolishPercent, poolishMaturationHours, pastaDiRiporto, pastaDiRiportoIdratazione,
-    salePercent, olioPercent, maltoPercent, lmPercent, flourMode, flours, prefermentoType,
-  ]);
+  const getCurrentFormState = (): RecipeFormState => ({
+    recipe, numPanetti, pesoPanetto, idratazione, yeastType, lmIdratazione,
+    maturationHours, salePercent, olioPercent, maltoPercent, teglie,
+    poolishPercent, poolishMaturationHours, prefermentoType, tempPrefermento,
+    pastaDiRiporto, pastaDiRiportoIdratazione, fermoFrigoHours, autolisiHours,
+    tAmbiente, flourMode, flours, lmPercent, lmCustomActive, breadCustom,
+    breadCustomWeight, mixingMethod, maturationMode, scheduleDate, scheduleHour, scheduleMinute,
+  });
+
+  const saveRecipe = useCallback(async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    setShowSaveDialog(true);
+    setSaveRecipeName(`${t("save.ricetta")} - ${format(new Date(), "dd/MM HH:mm")}`);
+  }, [user, navigate, t]);
+
+  const confirmSaveRecipe = useCallback(async () => {
+    if (!user) return;
+    setSavingRecipe(true);
+    const state = getCurrentFormState();
+    const { error } = await saveRecipeToDb(saveRecipeName, state, user.id);
+    setSavingRecipe(false);
+    setShowSaveDialog(false);
+    if (error) {
+      toast({ title: t("save.error"), description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: t("save.success") });
+    }
+  }, [user, saveRecipeName]);
 
   const handleNavigate = useCallback((view: string) => {
     setActiveView(view as View);
   }, []);
-
 
   const activeTab: Tab = activeView === "avanzate" ? "ricetta" : (activeView as Tab);
 
@@ -230,13 +300,31 @@ const Index = () => {
           loading="eager"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/30 to-foreground/70 flex flex-col justify-end p-4">
-          <button
-            onClick={() => setLang(lang === "it" ? "en" : "it")}
-            className="absolute top-3 right-3 flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            {lang === "it" ? "EN" : "IT"}
-          </button>
+          <div className="absolute top-3 right-3 flex items-center gap-2">
+            <button
+              onClick={() => setLang(lang === "it" ? "en" : "it")}
+              className="flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
+            >
+              <Globe className="h-3.5 w-3.5" />
+              {lang === "it" ? "EN" : "IT"}
+            </button>
+            {user ? (
+              <button
+                onClick={() => navigate("/profile")}
+                className="flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
+              >
+                <User className="h-3.5 w-3.5" />
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate("/login")}
+                className="flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
+              >
+                <User className="h-3.5 w-3.5" />
+                {t("auth.login")}
+              </button>
+            )}
+          </div>
           <h1 className="text-2xl font-bold text-primary-foreground leading-tight text-center">
             {t("app.title")}
           </h1>
@@ -245,6 +333,34 @@ const Index = () => {
           </p>
         </div>
       </header>
+
+      {/* Save dialog */}
+      {showSaveDialog && (
+        <div className="fixed inset-0 bg-foreground/50 z-[60] flex items-center justify-center p-4">
+          <div className="bg-card rounded-2xl p-6 shadow-xl w-full max-w-sm space-y-4">
+            <h3 className="text-lg font-bold">{t("save.btn")}</h3>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase">{t("save.name_prompt")}</label>
+              <input
+                type="text"
+                value={saveRecipeName}
+                onChange={(e) => setSaveRecipeName(e.target.value)}
+                className="w-full mt-1 bg-secondary rounded-xl px-3 py-2 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary"
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setShowSaveDialog(false)} className="flex-1 py-2 rounded-xl text-sm font-medium bg-secondary text-secondary-foreground">
+                {t("proc.annulla")}
+              </button>
+              <button onClick={confirmSaveRecipe} disabled={savingRecipe || !saveRecipeName.trim()} className="flex-1 py-2 rounded-xl text-sm font-bold bg-primary text-primary-foreground disabled:opacity-50 flex items-center justify-center gap-1">
+                {savingRecipe ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {t("btn.conferma")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="flex-1 pb-20">
         {activeView === "ricetta" && (
@@ -267,6 +383,7 @@ const Index = () => {
             result={result} input={input}
             drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}
             onNavigate={handleNavigate}
+            onSave={saveRecipe}
           />
         )}
         {activeView === "avanzate" && (
