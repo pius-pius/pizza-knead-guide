@@ -424,9 +424,14 @@ const DoughCalculator = ({
         <button
           onClick={() => onNavigate?.("avanzate")}
           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium text-muted-foreground bg-secondary rounded-xl">
-          
           <Settings className="h-4 w-4" />
           <span>{t("btn.opzioni_avanzate")}</span>
+        </button>
+        <button
+          onClick={onSave}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-medium text-muted-foreground bg-secondary rounded-xl">
+          <Check className="h-4 w-4" />
+          <span>{t("save.btn")}</span>
         </button>
         <Button className="flex-1 rounded-xl h-11 text-sm font-bold" onClick={() => onNavigate?.("dosi")}>
           {t("btn.vai_dosi")} <ArrowRight className="h-4 w-4 ml-1.5" />
