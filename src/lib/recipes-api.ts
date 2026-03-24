@@ -35,8 +35,6 @@ export interface SavedRecipe {
   flours?: FlourItem[] | null;
   lm_percent?: number;
   lm_custom_active?: boolean;
-  bread_custom?: boolean;
-  bread_custom_weight?: number;
   maturation_mode?: string;
   schedule_date?: string | null;
   schedule_hour?: number;
@@ -106,8 +104,6 @@ function stateToRow(name: string, state: RecipeFormState, userId: string) {
     flours: state.flours,
     lm_percent: state.lmPercent,
     lm_custom_active: state.lmCustomActive,
-    bread_custom: state.breadCustom,
-    bread_custom_weight: state.breadCustomWeight,
     maturation_mode: state.maturationMode,
     schedule_date: state.scheduleDate?.toISOString() || null,
     schedule_hour: state.scheduleHour,
@@ -145,8 +141,8 @@ export function rowToState(row: SavedRecipe): RecipeFormState {
     ],
     lmPercent: row.lm_percent ?? 30,
     lmCustomActive: row.lm_custom_active ?? false,
-    breadCustom: row.bread_custom ?? false,
-    breadCustomWeight: row.bread_custom_weight ?? 1000,
+    breadCustom: false,
+    breadCustomWeight: 1000,
     mixingMethod: (row.mixing_method || "manuale") as MixingMethod,
     maturationMode: (row.maturation_mode || "quando_mangio") as MaturationMode,
     scheduleDate: row.schedule_date ? new Date(row.schedule_date) : undefined,
