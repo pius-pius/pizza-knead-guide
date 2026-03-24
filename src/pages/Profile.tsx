@@ -50,7 +50,7 @@ const Profile = () => {
         </div>
         <div>
           <label className="text-xs font-semibold text-muted-foreground uppercase">Status</label>
-          <p className="text-sm font-medium mt-1 text-green-600">{profile?.is_active ? t("auth.active") : t("auth.inactive")}</p>
+          <p className={`text-sm font-medium mt-1 ${profile?.is_active ? "text-primary" : "text-muted-foreground"}`}>{profile?.is_active ? t("auth.active") : t("auth.inactive")}</p>
         </div>
         <div>
           <label className="text-xs font-semibold text-muted-foreground uppercase">{t("auth.member_since")}</label>

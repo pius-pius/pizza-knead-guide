@@ -48,7 +48,7 @@ const Login = () => {
         <div className="bg-card rounded-2xl p-6 shadow-sm space-y-4">
           <p className="text-sm text-muted-foreground">{t("auth.reset_desc")}</p>
           <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          {resetSent && <p className="text-sm text-green-600">{t("auth.reset_sent")}</p>}
+          {resetSent && <p className="text-sm text-primary">{t("auth.reset_sent")}</p>}
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button onClick={handleReset} disabled={loading} className="w-full rounded-xl">
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t("auth.send_reset")}
