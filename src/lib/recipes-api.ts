@@ -87,7 +87,8 @@ function stateToRow(name: string, state: RecipeFormState, userId: string) {
     recipe_type: state.recipe,
     quantity: state.numPanetti,
     dough_ball_weight: state.pesoPanetto,
-    yeast_type: state.yeastType,
+    yeast_type: state.yeastType === "LDB" ? "lievito_di_birra"
+      : state.lmIdratazione === 50 ? "lm_solido" : "licoli",
     maturation_hours: state.maturationHours,
     cold_retard_hours: state.fermoFrigoHours,
     autolysis_hours: state.autolisiHours,
