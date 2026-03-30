@@ -238,6 +238,13 @@ const Index = () => {
 
   const result = useMemo(() => calculateDough(input), [input]);
   const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
+
+  // Sync scheduleEndTime when processDuration changes (e.g. autolisi, prefermento, frigo changes)
+  useEffect(() => {
+    if (processDuration > 0) {
+      setScheduleEndTime(new Date(scheduleStartTime.getTime() + processDuration * 3600000));
+    }
+  }, [processDuration]);
   const openScheduleDrawer = useCallback((mode: MaturationMode) => {
     setDrawerMode(mode);
     const source = mode === "quando_inizio" ? scheduleStartTime : scheduleEndTime;
