@@ -239,12 +239,12 @@ const Index = () => {
   const result = useMemo(() => calculateDough(input), [input]);
   const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
 
-  // Sync scheduleEndTime when processDuration changes (e.g. autolisi, prefermento, frigo changes)
+  // Sync scheduleEndTime when processDuration changes ONLY while in advanced view
   useEffect(() => {
-    if (processDuration > 0) {
+    if (activeView === "avanzate" && processDuration > 0) {
       setScheduleEndTime(new Date(scheduleStartTime.getTime() + processDuration * 3600000));
     }
-  }, [processDuration]);
+  }, [processDuration, activeView]);
   const openScheduleDrawer = useCallback((mode: MaturationMode) => {
     setDrawerMode(mode);
     const source = mode === "quando_inizio" ? scheduleStartTime : scheduleEndTime;
@@ -262,18 +262,24 @@ const Index = () => {
       newTime.setHours(scheduleHour, scheduleMinute, 0, 0);
       if (drawerMode === "quando_inizio") {
         setScheduleStartTime(newTime);
-        // Recalculate endTime = newStart + processDuration
-        setScheduleEndTime(new Date(newTime.getTime() + processDuration * 3600000));
+        if (activeView === "avanzate") {
+          // In advanced: recalculate endTime based on process duration
+          setScheduleEndTime(new Date(newTime.getTime() + processDuration * 3600000));
+        }
+        // In ricetta: only update start, end stays as user set it
         setMaturationMode("quando_inizio");
       } else {
         setScheduleEndTime(newTime);
-        // Keep process params constant, recalculate startTime backwards
-        setScheduleStartTime(new Date(newTime.getTime() - processDuration * 3600000));
+        if (activeView === "avanzate") {
+          // In advanced: recalculate startTime backwards
+          setScheduleStartTime(new Date(newTime.getTime() - processDuration * 3600000));
+        }
+        // In ricetta: only update end, start stays as user set it
         setMaturationMode("quando_mangio");
       }
     }
     setDrawerOpen(open);
-  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode, processDuration]);
+  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode, processDuration, activeView]);
 
   const addTeglia = useCallback(() => {
     setTeglie((prev) => [
