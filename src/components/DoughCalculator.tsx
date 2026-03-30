@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+import ScheduleDrawer from "./ScheduleDrawer";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import {
