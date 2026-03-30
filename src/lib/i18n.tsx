@@ -45,6 +45,11 @@ const translations = {
   "sched.mangio": { it: "Mangio", en: "Eating" },
   "sched.tocca_modificare": { it: "Tocca per modificare l'orario ☝️", en: "Tap to change the time ☝️" },
   "sched.incompatibile": { it: "⚠️ Durata del processo non compatibile con la data/ora di consumazione selezionata: diminuire ore di maturazione o posticipare l'orario.", en: "⚠️ Process duration incompatible with selected eating time: reduce maturation hours or postpone." },
+  "sched.liev_troppo_corta": { it: "⚠️ Lievitazione troppo corta! Aumentare le ore di maturazione o avvicinare inizio e fine.", en: "⚠️ Rising time too short! Increase maturation hours or bring start and end closer." },
+  "sched.consiglio_frigo": { it: "💡 Processo lungo: consigliato attivare il Fermo Frigo dalle Opzioni Avanzate.", en: "💡 Long process: consider enabling Cold Rest from Advanced Options." },
+  "sched.imposta_processo": { it: "Imposta inizio o fine processo", en: "Set start or end of process" },
+  "sched.fine_processo": { it: "Fine processo", en: "End of process" },
+  "sched.inizio_processo": { it: "Inizio processo", en: "Start of process" },
 
   // ── Maturation ──
   "mat.ore": { it: "ORE DI LIEVITAZIONE/MATURAZIONE", en: "RISING/MATURATION HOURS" },

@@ -287,6 +287,8 @@ const DoughCalculator = ({
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
         <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">{t("sched.dimmi_quando")}</p>
         {(() => {
+          const MIN_DURATION_HOURS = 4;
+          const MAX_DURATION_BEFORE_FRIGO_ALERT = 8;
           const now = new Date();
           const scheduled = scheduleDate ? new Date(scheduleDate) : now;
           if (scheduleDate) {
@@ -302,31 +304,53 @@ const DoughCalculator = ({
           const durationH = Math.floor(processDuration);
           const durationM = Math.round((processDuration - durationH) * 60);
           const processIncompatible = startTime.getTime() < now.getTime();
+          const isTooShort = processDuration < MIN_DURATION_HOURS;
+          const isTooLong = processDuration > MAX_DURATION_BEFORE_FRIGO_ALERT;
           return (
             <>
-              <button onClick={() => {setDrawerMode("quando_mangio");setMaturationMode("quando_mangio");setDrawerOpen(true);}} className="w-full bg-primary/5 rounded-xl p-3 border border-primary/10 text-left hover:bg-primary/10 transition-colors active:scale-[0.98]">
+              <div className="w-full bg-primary/5 rounded-xl p-3 border border-primary/10">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <button
+                    onClick={() => {setMaturationMode("quando_inizio");setDrawerOpen(true);}}
+                    className="text-left hover:opacity-70 transition-opacity active:scale-[0.97]"
+                  >
                     <p className="text-[10px] text-muted-foreground uppercase">{t("sched.inizia_prep")}</p>
                     <p className="text-sm font-bold text-primary">
                       {format(startTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
                     </p>
-                  </div>
+                  </button>
                   <div className="text-center">
                     <p className="text-[10px] text-muted-foreground uppercase">{t("sched.durata")}</p>
                     <p className="text-xs font-bold text-foreground">
                       {durationH}h{durationM > 0 ? ` ${durationM}m` : ""}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <button
+                    onClick={() => {setMaturationMode("quando_mangio");setDrawerOpen(true);}}
+                    className="text-right hover:opacity-70 transition-opacity active:scale-[0.97]"
+                  >
                     <p className="text-[10px] text-muted-foreground uppercase">{t("sched.mangio")}</p>
                     <p className="text-sm font-bold text-foreground">
                       {format(endTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
                     </p>
-                  </div>
+                  </button>
                 </div>
                 <p className="text-[10px] text-primary/60 text-center mt-2">{t("sched.tocca_modificare")}</p>
-              </button>
+              </div>
+              {isTooShort && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
+                  <p className="text-[11px] text-destructive leading-relaxed">
+                    {t("sched.liev_troppo_corta")}
+                  </p>
+                </div>
+              )}
+              {isTooLong && !isTooShort && (
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
+                  <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+                    {t("sched.consiglio_frigo")}
+                  </p>
+                </div>
+              )}
               {processIncompatible && (
                 <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
                   <p className="text-[11px] text-destructive leading-relaxed">
@@ -338,12 +362,12 @@ const DoughCalculator = ({
         })()}
       </div>
 
-      {/* 4. Maturazione */}
+      {/* 4. Temperatura ambiente */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-4">
         <TooltipProvider>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-1.5">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("mat.ore")}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("mat.temp_ambiente")}</p>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button type="button" className="inline-flex">
@@ -351,72 +375,20 @@ const DoughCalculator = ({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[250px]">
-                  <p className="text-xs">{t("mat.info")}</p>
+                  <p className="text-xs">{t("mat.temp_info")}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
-            <span className="text-sm font-bold text-primary">{maturationHours}h</span>
+            <span className="text-sm font-bold text-primary">{tAmbiente}°C</span>
           </div>
         </TooltipProvider>
         <input
           type="range"
-          min={1}
-          max={72}
-          value={maturationHours}
-          onChange={(e) => setMaturationHours(Number(e.target.value))}
+          min={5}
+          max={40}
+          value={tAmbiente}
+          onChange={(e) => setTAmbiente(Number(e.target.value))}
           className="w-full accent-primary" />
-        
-        {maturationHours > 12 &&
-        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
-            <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
-              {t("mat.avviso_12h")}
-            </p>
-          </div>
-        }
-
-        <ScheduleDrawer
-          open={drawerOpen}
-          onOpenChange={setDrawerOpen}
-          maturationMode={maturationMode}
-          setMaturationMode={setMaturationMode}
-          scheduleDate={scheduleDate}
-          setScheduleDate={setScheduleDate}
-          scheduleHour={scheduleHour}
-          setScheduleHour={setScheduleHour}
-          scheduleMinute={scheduleMinute}
-          setScheduleMinute={setScheduleMinute}
-          processDuration={processDuration}
-        />
-
-        {/* Temperatura ambiente */}
-        <div>
-          <TooltipProvider>
-            <div className="flex justify-between items-center mb-2">
-              <div className="flex items-center gap-1.5">
-                <p className="text-xs text-muted-foreground">{t("mat.temp_ambiente")}</p>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button type="button" className="inline-flex">
-                      <Info className="h-3.5 w-3.5 text-muted-foreground" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[250px]">
-                    <p className="text-xs">{t("mat.temp_info")}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <span className="text-sm font-bold text-primary">{tAmbiente}°C</span>
-            </div>
-          </TooltipProvider>
-          <input
-            type="range"
-            min={5}
-            max={40}
-            value={tAmbiente}
-            onChange={(e) => setTAmbiente(Number(e.target.value))}
-            className="w-full accent-primary" />
-          
-        </div>
       </div>
 
       {/* 4. Bottom buttons */}
