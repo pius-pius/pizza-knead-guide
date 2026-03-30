@@ -465,6 +465,19 @@ const Index = () => {
             scheduleMinute={scheduleMinute}
           />
         )}
+
+        <ScheduleDrawer
+          open={drawerOpen}
+          onOpenChange={handleDrawerClose}
+          maturationMode={drawerMode}
+          scheduleDate={scheduleDate}
+          setScheduleDate={setScheduleDate}
+          scheduleHour={scheduleHour}
+          setScheduleHour={setScheduleHour}
+          scheduleMinute={scheduleMinute}
+          setScheduleMinute={setScheduleMinute}
+          otherTime={drawerMode === "quando_inizio" ? scheduleEndTime : scheduleStartTime}
+        />
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-50">
