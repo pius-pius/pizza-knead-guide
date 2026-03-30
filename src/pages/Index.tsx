@@ -403,15 +403,13 @@ const Index = () => {
             addTeglia={addTeglia} removeTeglia={removeTeglia} updateTeglia={updateTeglia}
             idratazione={idratazione} setIdratazione={setIdratazione}
             maturationHours={maturationHours} setMaturationHours={setMaturationHours}
-            maturationMode={maturationMode} setMaturationMode={setMaturationMode}
-            scheduleDate={scheduleDate} setScheduleDate={setScheduleDate}
-            scheduleHour={scheduleHour} setScheduleHour={setScheduleHour}
-            scheduleMinute={scheduleMinute} setScheduleMinute={setScheduleMinute}
             tAmbiente={tAmbiente} setTAmbiente={setTAmbiente}
             breadCustom={breadCustom} setBreadCustom={setBreadCustom}
             breadCustomWeight={breadCustomWeight} setBreadCustomWeight={setBreadCustomWeight}
             result={result} input={input}
-            drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}
+            scheduleStartTime={scheduleStartTime}
+            scheduleEndTime={scheduleEndTime}
+            onOpenScheduleDrawer={openScheduleDrawer}
             onNavigate={handleNavigate}
             onSave={saveRecipe}
           />
@@ -442,11 +440,7 @@ const Index = () => {
             result={result}
             startTime={scheduleStartTime}
             endTime={scheduleEndTime}
-            processDuration={processDuration}
-            maturationMode={maturationMode} setMaturationMode={setMaturationMode}
-            scheduleDate={scheduleDate} setScheduleDate={setScheduleDate}
-            scheduleHour={scheduleHour} setScheduleHour={setScheduleHour}
-            scheduleMinute={scheduleMinute} setScheduleMinute={setScheduleMinute}
+            onOpenScheduleDrawer={openScheduleDrawer}
             onNavigate={handleNavigate}
             onSave={saveRecipe}
           />
