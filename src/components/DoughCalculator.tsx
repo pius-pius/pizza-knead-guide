@@ -96,7 +96,6 @@ const DoughCalculator = ({
   const dateLocale = lang === "it" ? it : undefined;
   const isTeglia = recipe === "teglia_romana" || recipe === "focaccia_genovese";
   const isPane = recipe === "pane_classico";
-  const [drawerMode, setDrawerMode] = useState<MaturationMode>(maturationMode);
 
   const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
 
