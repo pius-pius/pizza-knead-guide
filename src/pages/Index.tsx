@@ -260,12 +260,8 @@ const Index = () => {
         setMaturationMode("quando_inizio");
       } else {
         setScheduleEndTime(newTime);
-        // Recalculate startTime = newEnd - maturationHours, and update maturationHours from new duration
-        const currentStart = scheduleStartTime;
-        const newDurationH = (newTime.getTime() - currentStart.getTime()) / 3600000;
-        if (newDurationH > 0) {
-          setMaturationHours(Math.round(newDurationH));
-        }
+        // Keep maturationHours constant, recalculate startTime backwards
+        setScheduleStartTime(new Date(newTime.getTime() - maturationHours * 3600000));
         setMaturationMode("quando_mangio");
       }
     }
