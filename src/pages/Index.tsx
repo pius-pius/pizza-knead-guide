@@ -263,6 +263,8 @@ const Index = () => {
     }
     setDrawerOpen(open);
   }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode]);
+
+  const addTeglia = useCallback(() => {
     setTeglie((prev) => [
       ...prev,
       { id: tegliaNextId++, shape: "rettangolare", width: 30, height: 40, diameter: 30 },
