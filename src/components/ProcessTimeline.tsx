@@ -32,6 +32,7 @@ const ProcessTimeline = ({
   scheduleDate,
   scheduleHour,
   scheduleMinute,
+  scheduleStartTime: passedStartTime,
 }: ProcessTimelineProps) => {
   const { t, lang } = useI18n();
   const dateLocale = lang === "it" ? it : undefined;
