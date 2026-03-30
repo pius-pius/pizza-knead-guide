@@ -61,6 +61,7 @@ const Index = () => {
   ];
   const [activeView, setActiveView] = useState<View>("ricetta");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerMode, setDrawerMode] = useState<MaturationMode>("quando_mangio");
 
   // ── All calculator state ──
   const [recipe, setRecipe] = useState<RecipeType>("napoletana");
@@ -74,9 +75,23 @@ const Index = () => {
   const [lmIdratazione, setLmIdratazione] = useState<50 | 100>(50);
   const [maturationHours, setMaturationHours] = useState(6);
   const [maturationMode, setMaturationMode] = useState<MaturationMode>("quando_mangio");
+  // Drawer editing buffer
   const [scheduleDate, setScheduleDate] = useState<Date | undefined>(getDefaultScheduleDate);
   const [scheduleHour, setScheduleHour] = useState(20);
   const [scheduleMinute, setScheduleMinute] = useState(0);
+  // Independent start/end times
+  const [scheduleStartTime, setScheduleStartTime] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(14, 0, 0, 0);
+    return d;
+  });
+  const [scheduleEndTime, setScheduleEndTime] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(20, 0, 0, 0);
+    return d;
+  });
   const [tAmbiente, setTAmbiente] = useState(22);
   const [autolisiHours, setAutolisiHours] = useState(0);
   const [poolishPercent, setPoolishPercent] = useState(0);
