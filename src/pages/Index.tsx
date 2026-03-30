@@ -453,7 +453,7 @@ const Index = () => {
             pastaDiRiporto={pastaDiRiporto} setPastaDiRiporto={setPastaDiRiporto}
             pastaDiRiportoIdratazione={pastaDiRiportoIdratazione} setPastaDiRiportoIdratazione={setPastaDiRiportoIdratazione}
             fermoFrigoHours={fermoFrigoHours} setFermoFrigoHours={setFermoFrigoHours}
-            maturationHours={maturationHours} setMaturationHours={setMaturationHours}
+            maturationHours={maturationHours} setMaturationHours={handleSetMaturationHours}
             tAmbiente={tAmbiente} setTAmbiente={setTAmbiente}
             input={input}
             result={result}
