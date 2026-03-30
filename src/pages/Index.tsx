@@ -485,6 +485,7 @@ const Index = () => {
             scheduleDate={scheduleDate}
             scheduleHour={scheduleHour}
             scheduleMinute={scheduleMinute}
+            scheduleStartTime={scheduleStartTime}
           />
         )}
 
