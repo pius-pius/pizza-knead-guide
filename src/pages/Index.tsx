@@ -318,20 +318,20 @@ const Index = () => {
     }
   }, [user, saveRecipeName]);
 
-  // When maturationHours changes (from slider in advanced), update endTime
+  // When maturationHours changes (from slider in advanced), recalculate endTime
+  // We need to compute the new processDuration inline since the memo hasn't updated yet
   const handleSetMaturationHours = useCallback((h: number) => {
     setMaturationHours(h);
-    setScheduleEndTime(new Date(scheduleStartTime.getTime() + h * 3600000));
-  }, [scheduleStartTime]);
+    // Compute new process duration with updated maturationHours
+    const newInput = { ...input, maturationHours: h };
+    const newResult = calculateDough(newInput);
+    const newProcessDuration = getProcessDuration(newInput, newResult);
+    setScheduleEndTime(new Date(scheduleStartTime.getTime() + newProcessDuration * 3600000));
+  }, [scheduleStartTime, input]);
 
   const handleNavigate = useCallback((view: string) => {
-    if (view === "avanzate") {
-      // Sync maturationHours from current schedule duration
-      const durationH = Math.round((scheduleEndTime.getTime() - scheduleStartTime.getTime()) / 3600000);
-      if (durationH > 0) setMaturationHours(durationH);
-    }
     setActiveView(view as View);
-  }, [scheduleStartTime, scheduleEndTime]);
+  }, []);
 
   const activeTab: Tab = activeView === "avanzate" ? "ricetta" : (activeView as Tab);
 
