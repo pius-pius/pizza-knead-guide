@@ -239,12 +239,12 @@ const Index = () => {
   const result = useMemo(() => calculateDough(input), [input]);
   const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
 
-  // Sync scheduleEndTime when processDuration changes (e.g. autolisi, prefermento, frigo changes)
+  // Sync scheduleEndTime when processDuration changes ONLY while in advanced view
   useEffect(() => {
-    if (processDuration > 0) {
+    if (activeView === "avanzate" && processDuration > 0) {
       setScheduleEndTime(new Date(scheduleStartTime.getTime() + processDuration * 3600000));
     }
-  }, [processDuration]);
+  }, [processDuration, activeView]);
   const openScheduleDrawer = useCallback((mode: MaturationMode) => {
     setDrawerMode(mode);
     const source = mode === "quando_inizio" ? scheduleStartTime : scheduleEndTime;
