@@ -322,9 +322,20 @@ const Index = () => {
     }
   }, [user, saveRecipeName]);
 
+  // When maturationHours changes (from slider in advanced), update endTime
+  const handleSetMaturationHours = useCallback((h: number) => {
+    setMaturationHours(h);
+    setScheduleEndTime(new Date(scheduleStartTime.getTime() + h * 3600000));
+  }, [scheduleStartTime]);
+
   const handleNavigate = useCallback((view: string) => {
+    if (view === "avanzate") {
+      // Sync maturationHours from current schedule duration
+      const durationH = Math.round((scheduleEndTime.getTime() - scheduleStartTime.getTime()) / 3600000);
+      if (durationH > 0) setMaturationHours(durationH);
+    }
     setActiveView(view as View);
-  }, []);
+  }, [scheduleStartTime, scheduleEndTime]);
 
   const activeTab: Tab = activeView === "avanzate" ? "ricetta" : (activeView as Tab);
 
