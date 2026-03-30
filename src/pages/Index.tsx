@@ -238,19 +238,31 @@ const Index = () => {
 
   const result = useMemo(() => calculateDough(input), [input]);
   const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
-  const { scheduleStartTime, scheduleEndTime } = useMemo(() => {
-    const now = new Date();
-    const scheduled = scheduleDate ? new Date(scheduleDate) : now;
-    if (scheduleDate) {
-      scheduled.setHours(scheduleHour, scheduleMinute, 0, 0);
-    }
-    const isInizio = maturationMode === "quando_inizio";
-    const st = isInizio ? scheduled : new Date(scheduled.getTime() - processDuration * 3600 * 1000);
-    const et = isInizio ? new Date(scheduled.getTime() + processDuration * 3600 * 1000) : scheduled;
-    return { scheduleStartTime: st, scheduleEndTime: et };
-  }, [scheduleDate, scheduleHour, scheduleMinute, maturationMode, processDuration]);
+  const openScheduleDrawer = useCallback((mode: MaturationMode) => {
+    setDrawerMode(mode);
+    const source = mode === "quando_inizio" ? scheduleStartTime : scheduleEndTime;
+    const d = new Date(source);
+    d.setHours(0, 0, 0, 0);
+    setScheduleDate(d);
+    setScheduleHour(source.getHours());
+    setScheduleMinute(source.getMinutes());
+    setDrawerOpen(true);
+  }, [scheduleStartTime, scheduleEndTime]);
 
-  const addTeglia = useCallback(() => {
+  const handleDrawerClose = useCallback((open: boolean) => {
+    if (!open && scheduleDate) {
+      const newTime = new Date(scheduleDate);
+      newTime.setHours(scheduleHour, scheduleMinute, 0, 0);
+      if (drawerMode === "quando_inizio") {
+        setScheduleStartTime(newTime);
+        setMaturationMode("quando_inizio");
+      } else {
+        setScheduleEndTime(newTime);
+        setMaturationMode("quando_mangio");
+      }
+    }
+    setDrawerOpen(open);
+  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode]);
     setTeglie((prev) => [
       ...prev,
       { id: tegliaNextId++, shape: "rettangolare", width: 30, height: 40, diameter: 30 },
