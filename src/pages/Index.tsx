@@ -255,18 +255,18 @@ const Index = () => {
       newTime.setHours(scheduleHour, scheduleMinute, 0, 0);
       if (drawerMode === "quando_inizio") {
         setScheduleStartTime(newTime);
-        // Recalculate endTime = newStart + maturationHours
-        setScheduleEndTime(new Date(newTime.getTime() + maturationHours * 3600000));
+        // Recalculate endTime = newStart + processDuration
+        setScheduleEndTime(new Date(newTime.getTime() + processDuration * 3600000));
         setMaturationMode("quando_inizio");
       } else {
         setScheduleEndTime(newTime);
-        // Keep maturationHours constant, recalculate startTime backwards
-        setScheduleStartTime(new Date(newTime.getTime() - maturationHours * 3600000));
+        // Keep process params constant, recalculate startTime backwards
+        setScheduleStartTime(new Date(newTime.getTime() - processDuration * 3600000));
         setMaturationMode("quando_mangio");
       }
     }
     setDrawerOpen(open);
-  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode, maturationHours, scheduleStartTime]);
+  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode, processDuration]);
 
   const addTeglia = useCallback(() => {
     setTeglie((prev) => [
