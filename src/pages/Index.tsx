@@ -255,14 +255,22 @@ const Index = () => {
       newTime.setHours(scheduleHour, scheduleMinute, 0, 0);
       if (drawerMode === "quando_inizio") {
         setScheduleStartTime(newTime);
+        // Recalculate endTime = newStart + maturationHours
+        setScheduleEndTime(new Date(newTime.getTime() + maturationHours * 3600000));
         setMaturationMode("quando_inizio");
       } else {
         setScheduleEndTime(newTime);
+        // Recalculate startTime = newEnd - maturationHours, and update maturationHours from new duration
+        const currentStart = scheduleStartTime;
+        const newDurationH = (newTime.getTime() - currentStart.getTime()) / 3600000;
+        if (newDurationH > 0) {
+          setMaturationHours(Math.round(newDurationH));
+        }
         setMaturationMode("quando_mangio");
       }
     }
     setDrawerOpen(open);
-  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode]);
+  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode, maturationHours, scheduleStartTime]);
 
   const addTeglia = useCallback(() => {
     setTeglie((prev) => [
@@ -314,9 +322,20 @@ const Index = () => {
     }
   }, [user, saveRecipeName]);
 
+  // When maturationHours changes (from slider in advanced), update endTime
+  const handleSetMaturationHours = useCallback((h: number) => {
+    setMaturationHours(h);
+    setScheduleEndTime(new Date(scheduleStartTime.getTime() + h * 3600000));
+  }, [scheduleStartTime]);
+
   const handleNavigate = useCallback((view: string) => {
+    if (view === "avanzate") {
+      // Sync maturationHours from current schedule duration
+      const durationH = Math.round((scheduleEndTime.getTime() - scheduleStartTime.getTime()) / 3600000);
+      if (durationH > 0) setMaturationHours(durationH);
+    }
     setActiveView(view as View);
-  }, []);
+  }, [scheduleStartTime, scheduleEndTime]);
 
   const activeTab: Tab = activeView === "avanzate" ? "ricetta" : (activeView as Tab);
 
@@ -434,7 +453,7 @@ const Index = () => {
             pastaDiRiporto={pastaDiRiporto} setPastaDiRiporto={setPastaDiRiporto}
             pastaDiRiportoIdratazione={pastaDiRiportoIdratazione} setPastaDiRiportoIdratazione={setPastaDiRiportoIdratazione}
             fermoFrigoHours={fermoFrigoHours} setFermoFrigoHours={setFermoFrigoHours}
-            maturationHours={maturationHours} setMaturationHours={setMaturationHours}
+            maturationHours={maturationHours} setMaturationHours={handleSetMaturationHours}
             tAmbiente={tAmbiente} setTAmbiente={setTAmbiente}
             input={input}
             result={result}
