@@ -17,6 +17,7 @@ interface ProcessTimelineProps {
   scheduleDate?: Date;
   scheduleHour: number;
   scheduleMinute: number;
+  scheduleStartTime?: Date;
 }
 
 interface ClickedStep {
