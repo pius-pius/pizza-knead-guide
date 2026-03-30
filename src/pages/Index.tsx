@@ -238,6 +238,13 @@ const Index = () => {
 
   const result = useMemo(() => calculateDough(input), [input]);
   const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
+
+  // Sync scheduleEndTime when processDuration changes (e.g. autolisi, prefermento, frigo changes)
+  useEffect(() => {
+    if (processDuration > 0) {
+      setScheduleEndTime(new Date(scheduleStartTime.getTime() + processDuration * 3600000));
+    }
+  }, [processDuration]);
   const openScheduleDrawer = useCallback((mode: MaturationMode) => {
     setDrawerMode(mode);
     const source = mode === "quando_inizio" ? scheduleStartTime : scheduleEndTime;
@@ -255,18 +262,18 @@ const Index = () => {
       newTime.setHours(scheduleHour, scheduleMinute, 0, 0);
       if (drawerMode === "quando_inizio") {
         setScheduleStartTime(newTime);
-        // Recalculate endTime = newStart + maturationHours
-        setScheduleEndTime(new Date(newTime.getTime() + maturationHours * 3600000));
+        // Recalculate endTime = newStart + processDuration
+        setScheduleEndTime(new Date(newTime.getTime() + processDuration * 3600000));
         setMaturationMode("quando_inizio");
       } else {
         setScheduleEndTime(newTime);
-        // Keep maturationHours constant, recalculate startTime backwards
-        setScheduleStartTime(new Date(newTime.getTime() - maturationHours * 3600000));
+        // Keep process params constant, recalculate startTime backwards
+        setScheduleStartTime(new Date(newTime.getTime() - processDuration * 3600000));
         setMaturationMode("quando_mangio");
       }
     }
     setDrawerOpen(open);
-  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode, maturationHours, scheduleStartTime]);
+  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode, processDuration]);
 
   const addTeglia = useCallback(() => {
     setTeglie((prev) => [
@@ -318,20 +325,20 @@ const Index = () => {
     }
   }, [user, saveRecipeName]);
 
-  // When maturationHours changes (from slider in advanced), update endTime
+  // When maturationHours changes (from slider in advanced), recalculate endTime
+  // We need to compute the new processDuration inline since the memo hasn't updated yet
   const handleSetMaturationHours = useCallback((h: number) => {
     setMaturationHours(h);
-    setScheduleEndTime(new Date(scheduleStartTime.getTime() + h * 3600000));
-  }, [scheduleStartTime]);
+    // Compute new process duration with updated maturationHours
+    const newInput = { ...input, maturationHours: h };
+    const newResult = calculateDough(newInput);
+    const newProcessDuration = getProcessDuration(newInput, newResult);
+    setScheduleEndTime(new Date(scheduleStartTime.getTime() + newProcessDuration * 3600000));
+  }, [scheduleStartTime, input]);
 
   const handleNavigate = useCallback((view: string) => {
-    if (view === "avanzate") {
-      // Sync maturationHours from current schedule duration
-      const durationH = Math.round((scheduleEndTime.getTime() - scheduleStartTime.getTime()) / 3600000);
-      if (durationH > 0) setMaturationHours(durationH);
-    }
     setActiveView(view as View);
-  }, [scheduleStartTime, scheduleEndTime]);
+  }, []);
 
   const activeTab: Tab = activeView === "avanzate" ? "ricetta" : (activeView as Tab);
 
@@ -478,6 +485,7 @@ const Index = () => {
             scheduleDate={scheduleDate}
             scheduleHour={scheduleHour}
             scheduleMinute={scheduleMinute}
+            scheduleStartTime={scheduleStartTime}
           />
         )}
 
