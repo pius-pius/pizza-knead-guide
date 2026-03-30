@@ -523,9 +523,6 @@ export default AdvancedOptions;
             )}
           </div>
         )}
-      </div>
-
-      {/* 2. Ore di maturazione */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
         <div className="flex justify-between items-center">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.ore_maturazione")}</p>
