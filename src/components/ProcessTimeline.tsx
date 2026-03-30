@@ -80,6 +80,7 @@ const ProcessTimeline = ({
   }, [steps]);
 
   const baseStartTime = useMemo((): Date => {
+    if (passedStartTime) return passedStartTime;
     if (scheduleDate) {
       const scheduled = new Date(scheduleDate);
       scheduled.setHours(scheduleHour, scheduleMinute, 0, 0);
@@ -90,7 +91,7 @@ const ProcessTimeline = ({
       }
     }
     return new Date();
-  }, [maturationMode, scheduleDate, scheduleHour, scheduleMinute, totalHours]);
+  }, [passedStartTime, maturationMode, scheduleDate, scheduleHour, scheduleMinute, totalHours]);
 
   const [clickedStep, setClickedStep] = useState<ClickedStep | null>(null);
 
