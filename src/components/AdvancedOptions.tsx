@@ -58,6 +58,8 @@ interface AdvancedOptionsProps {
   setFermoFrigoHours: (n: number) => void;
   maturationHours: number;
   setMaturationHours: (n: number) => void;
+  tAmbiente: number;
+  setTAmbiente: (n: number) => void;
   input: DoughInput;
   result: DoughResult;
   startTime: Date;
