@@ -39,11 +39,11 @@ const translations = {
   "qty.peso_panetto": { it: "Peso panetto", en: "Ball weight" },
 
   // ── Schedule ──
-  "sched.dimmi_quando": { it: "🍽️ Dimmi quando vuoi mangiare", en: "🍽️ Tell me when you want to eat" },
+  "sched.dimmi_quando": { it: "🍽️ Dimmi quando vuoi impastare e mangiare: clicca sugli orari", en: "🍽️ Tell me when you want to knead and eat: tap the times" },
   "sched.inizia_prep": { it: "Inizia preparazione", en: "Start preparation" },
   "sched.durata": { it: "Durata", en: "Duration" },
   "sched.mangio": { it: "Mangio", en: "Eating" },
-  "sched.tocca_modificare": { it: "Tocca per modificare l'orario ☝️", en: "Tap to change the time ☝️" },
+  "sched.tocca_modificare": { it: "Tocca sugli orari per modificarli ☝️", en: "Tap on times to change them ☝️" },
   "sched.incompatibile": { it: "⚠️ Durata del processo non compatibile con la data/ora di consumazione selezionata: diminuire ore di maturazione o posticipare l'orario.", en: "⚠️ Process duration incompatible with selected eating time: reduce maturation hours or postpone." },
   "sched.liev_troppo_corta": { it: "⚠️ Lievitazione troppo corta! Aumentare le ore di maturazione o avvicinare inizio e fine.", en: "⚠️ Rising time too short! Increase maturation hours or bring start and end closer." },
   "sched.consiglio_frigo": { it: "💡 Processo lungo: consigliato attivare il Fermo Frigo dalle Opzioni Avanzate.", en: "💡 Long process: consider enabling Cold Rest from Advanced Options." },

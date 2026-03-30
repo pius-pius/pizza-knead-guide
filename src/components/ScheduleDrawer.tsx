@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { CalendarIcon, Check } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
@@ -14,39 +13,39 @@ interface ScheduleDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   maturationMode: MaturationMode;
-  setMaturationMode: (m: MaturationMode) => void;
   scheduleDate?: Date;
   setScheduleDate: (d: Date | undefined) => void;
   scheduleHour: number;
   setScheduleHour: (n: number) => void;
   scheduleMinute: number;
   setScheduleMinute: (n: number) => void;
-  processDuration: number;
+  otherTime: Date;
 }
 
 const ScheduleDrawer = ({
   open, onOpenChange,
-  maturationMode, setMaturationMode,
+  maturationMode,
   scheduleDate, setScheduleDate,
   scheduleHour, setScheduleHour,
   scheduleMinute, setScheduleMinute,
-  processDuration,
+  otherTime,
 }: ScheduleDrawerProps) => {
   const { t, lang } = useI18n();
   const dateLocale = lang === "it" ? it : undefined;
+  const isInizio = maturationMode === "quando_inizio";
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="max-h-[85vh]">
         <DrawerHeader className="pb-2">
           <DrawerTitle className="text-center text-base">
-            {maturationMode === "quando_inizio" ? t("drawer.quando_inizio") : t("drawer.quando_mangio")}
+            {isInizio ? t("drawer.quando_inizio") : t("drawer.quando_mangio")}
           </DrawerTitle>
         </DrawerHeader>
         <div className="px-4 space-y-4 pb-2">
           <div>
             <p className="text-xs text-muted-foreground mb-1.5">
-              {maturationMode === "quando_inizio" ? t("drawer.giorno_inizio") : t("drawer.giorno_mangio")}
+              {isInizio ? t("drawer.giorno_inizio") : t("drawer.giorno_mangio")}
             </p>
             <Popover>
               <PopoverTrigger asChild>
@@ -76,7 +75,7 @@ const ScheduleDrawer = ({
           </div>
           <div>
             <p className="text-xs text-muted-foreground mb-1.5">
-              {maturationMode === "quando_inizio" ? t("drawer.ora_inizio") : t("drawer.ora_cottura")}
+              {isInizio ? t("drawer.ora_inizio") : t("drawer.ora_cottura")}
             </p>
             <div className="flex gap-2 items-center">
               <select
@@ -101,27 +100,15 @@ const ScheduleDrawer = ({
             </div>
           </div>
 
-          {scheduleDate && (() => {
-            const scheduled = new Date(scheduleDate);
-            scheduled.setHours(scheduleHour, scheduleMinute, 0, 0);
-            const isInizio = maturationMode === "quando_inizio";
-            const targetTime = isInizio
-              ? new Date(scheduled.getTime() + processDuration * 3600 * 1000)
-              : new Date(scheduled.getTime() - processDuration * 3600 * 1000);
-            return (
-              <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">{t("drawer.durata_processo")}</p>
-                  <span className="text-sm font-bold text-primary">{Math.round(processDuration)}h</span>
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  {isInizio
-                    ? `${t("drawer.pronto")} ${format(targetTime, "EEEE d/MM 'alle' HH:mm", { locale: dateLocale })}`
-                    : `${t("drawer.inizia_prep")} ${format(targetTime, "EEEE d/MM 'alle' HH:mm", { locale: dateLocale })}`}
-                </p>
-              </div>
-            );
-          })()}
+          {/* Show the other time */}
+          <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
+            <p className="text-xs text-muted-foreground">
+              {isInizio ? t("sched.mangio") : t("sched.inizia_prep")}
+            </p>
+            <p className="text-sm font-bold text-primary">
+              {format(otherTime, "EEEE d/MM 'alle' HH:mm", { locale: dateLocale })}
+            </p>
+          </div>
         </div>
         <DrawerFooter className="pt-2">
           <Button className="w-full rounded-xl h-11 font-bold" onClick={() => onOpenChange(false)}>

@@ -15,7 +15,6 @@ import {
   type PrefermentoType,
 } from "@/lib/dough-calculator";
 import FlourMixer from "./FlourMixer";
-import ScheduleDrawer from "./ScheduleDrawer";
 import type { FlourItem } from "./DoughCalculator";
 import type { MaturationMode } from "@/pages/Index";
 
@@ -64,15 +63,7 @@ interface AdvancedOptionsProps {
   result: DoughResult;
   startTime: Date;
   endTime: Date;
-  processDuration: number;
-  maturationMode: MaturationMode;
-  setMaturationMode: (m: MaturationMode) => void;
-  scheduleDate?: Date;
-  setScheduleDate: (d: Date | undefined) => void;
-  scheduleHour: number;
-  setScheduleHour: (n: number) => void;
-  scheduleMinute: number;
-  setScheduleMinute: (n: number) => void;
+  onOpenScheduleDrawer: (mode: MaturationMode) => void;
   onNavigate?: (view: string) => void;
   onSave?: () => void;
 }
@@ -100,18 +91,18 @@ const AdvancedOptions = ({
   tAmbiente, setTAmbiente,
   input,
   result,
-  startTime, endTime, processDuration,
-  maturationMode, setMaturationMode,
-  scheduleDate, setScheduleDate,
-  scheduleHour, setScheduleHour,
-  scheduleMinute, setScheduleMinute,
+  startTime, endTime,
+  onOpenScheduleDrawer,
   onNavigate,
   onSave,
 }: AdvancedOptionsProps) => {
   const { t, lang } = useI18n();
   const dateLocale = lang === "it" ? it : undefined;
   const wConsigliato = getWForHours(maturationHours);
-  const [scheduleDrawerOpen, setScheduleDrawerOpen] = useState(false);
+
+  const scheduleDuration = useMemo(() => {
+    return (endTime.getTime() - startTime.getTime()) / 3600000;
+  }, [startTime, endTime]);
 
   const frigoTimes = useMemo(() => {
     if (fermoFrigoHours <= 0) return null;
@@ -165,23 +156,14 @@ const AdvancedOptions = ({
 
       {/* 1. Schedule block — FIRST */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
-        <button
-          onClick={() => setMaturationMode(maturationMode === "quando_mangio" ? "quando_inizio" : "quando_mangio")}
-          className="w-full"
-        >
-          <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">
-            {t("sched.imposta_processo")}
-          </p>
-          <p className="text-[10px] text-muted-foreground text-center mt-0.5">
-            {maturationMode === "quando_mangio" ? `✅ ${t("sched.fine_processo")}` : `✅ ${t("sched.inizio_processo")}`}
-            {" — "}{lang === "it" ? "clicca per cambiare" : "click to switch"}
-          </p>
-        </button>
+        <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">
+          {t("sched.imposta_processo")}
+        </p>
 
         <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
           <div className="flex items-center justify-between">
             <button
-              onClick={() => { setMaturationMode("quando_inizio"); setScheduleDrawerOpen(true); }}
+              onClick={() => onOpenScheduleDrawer("quando_inizio")}
               className="text-left hover:opacity-70 transition-opacity active:scale-[0.97]"
             >
               <p className="text-[10px] text-muted-foreground uppercase">{t("sched.inizia_prep")}</p>
@@ -192,14 +174,14 @@ const AdvancedOptions = ({
             <div className="text-center">
               <p className="text-[10px] text-muted-foreground uppercase">{t("sched.durata")}</p>
               <p className="text-xs font-bold text-foreground">
-                {Math.floor(processDuration)}h
-                {Math.round((processDuration - Math.floor(processDuration)) * 60) > 0
-                  ? ` ${Math.round((processDuration - Math.floor(processDuration)) * 60)}m`
+                {Math.floor(scheduleDuration)}h
+                {Math.round((scheduleDuration - Math.floor(scheduleDuration)) * 60) > 0
+                  ? ` ${Math.round((scheduleDuration - Math.floor(scheduleDuration)) * 60)}m`
                   : ""}
               </p>
             </div>
             <button
-              onClick={() => { setMaturationMode("quando_mangio"); setScheduleDrawerOpen(true); }}
+              onClick={() => onOpenScheduleDrawer("quando_mangio")}
               className="text-right hover:opacity-70 transition-opacity active:scale-[0.97]"
             >
               <p className="text-[10px] text-muted-foreground uppercase">{t("sched.mangio")}</p>
@@ -218,20 +200,6 @@ const AdvancedOptions = ({
           </div>
         )}
       </div>
-
-      <ScheduleDrawer
-        open={scheduleDrawerOpen}
-        onOpenChange={setScheduleDrawerOpen}
-        maturationMode={maturationMode}
-        setMaturationMode={setMaturationMode}
-        scheduleDate={scheduleDate}
-        setScheduleDate={setScheduleDate}
-        scheduleHour={scheduleHour}
-        setScheduleHour={setScheduleHour}
-        scheduleMinute={scheduleMinute}
-        setScheduleMinute={setScheduleMinute}
-        processDuration={processDuration}
-      />
 
       {/* 2. Tipo Lievito */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
