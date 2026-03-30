@@ -58,6 +58,8 @@ interface AdvancedOptionsProps {
   setFermoFrigoHours: (n: number) => void;
   maturationHours: number;
   setMaturationHours: (n: number) => void;
+  tAmbiente: number;
+  setTAmbiente: (n: number) => void;
   input: DoughInput;
   result: DoughResult;
   startTime: Date;
@@ -95,6 +97,7 @@ const AdvancedOptions = ({
   pastaDiRiportoIdratazione, setPastaDiRiportoIdratazione,
   fermoFrigoHours, setFermoFrigoHours,
   maturationHours, setMaturationHours,
+  tAmbiente, setTAmbiente,
   input,
   result,
   startTime, endTime, processDuration,
@@ -160,7 +163,77 @@ const AdvancedOptions = ({
     <section className="px-4 py-6 space-y-4">
       <h2 className="text-2xl font-bold text-center mb-2">{t("adv.title")}</h2>
 
-      {/* 1. Tipo Lievito */}
+      {/* 1. Schedule block — FIRST */}
+      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+        <button
+          onClick={() => setMaturationMode(maturationMode === "quando_mangio" ? "quando_inizio" : "quando_mangio")}
+          className="w-full"
+        >
+          <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">
+            {t("sched.imposta_processo")}
+          </p>
+          <p className="text-[10px] text-muted-foreground text-center mt-0.5">
+            {maturationMode === "quando_mangio" ? `✅ ${t("sched.fine_processo")}` : `✅ ${t("sched.inizio_processo")}`}
+            {" — "}{lang === "it" ? "clicca per cambiare" : "click to switch"}
+          </p>
+        </button>
+
+        <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => { setMaturationMode("quando_inizio"); setScheduleDrawerOpen(true); }}
+              className="text-left hover:opacity-70 transition-opacity active:scale-[0.97]"
+            >
+              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.inizia_prep")}</p>
+              <p className="text-sm font-bold text-primary">
+                {format(startTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
+              </p>
+            </button>
+            <div className="text-center">
+              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.durata")}</p>
+              <p className="text-xs font-bold text-foreground">
+                {Math.floor(processDuration)}h
+                {Math.round((processDuration - Math.floor(processDuration)) * 60) > 0
+                  ? ` ${Math.round((processDuration - Math.floor(processDuration)) * 60)}m`
+                  : ""}
+              </p>
+            </div>
+            <button
+              onClick={() => { setMaturationMode("quando_mangio"); setScheduleDrawerOpen(true); }}
+              className="text-right hover:opacity-70 transition-opacity active:scale-[0.97]"
+            >
+              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.mangio")}</p>
+              <p className="text-sm font-bold text-foreground">
+                {format(endTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
+              </p>
+            </button>
+          </div>
+          <p className="text-[10px] text-primary/60 text-center mt-2">{t("sched.tocca_modificare")}</p>
+        </div>
+        {startTime.getTime() < Date.now() && (
+          <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
+            <p className="text-[11px] text-destructive leading-relaxed">
+              {t("adv.incompatibile")}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <ScheduleDrawer
+        open={scheduleDrawerOpen}
+        onOpenChange={setScheduleDrawerOpen}
+        maturationMode={maturationMode}
+        setMaturationMode={setMaturationMode}
+        scheduleDate={scheduleDate}
+        setScheduleDate={setScheduleDate}
+        scheduleHour={scheduleHour}
+        setScheduleHour={setScheduleHour}
+        scheduleMinute={scheduleMinute}
+        setScheduleMinute={setScheduleMinute}
+        processDuration={processDuration}
+      />
+
+      {/* 2. Tipo Lievito */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.tipo_lievito")}</p>
         <div className="grid grid-cols-3 gap-2">
@@ -207,7 +280,7 @@ const AdvancedOptions = ({
         )}
       </div>
 
-      {/* 2. Ore di maturazione */}
+      {/* 3. Ore di maturazione + Temperatura ambiente */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
         <div className="flex justify-between items-center">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.ore_maturazione")}</p>
@@ -222,9 +295,19 @@ const AdvancedOptions = ({
             </p>
           </div>
         )}
+
+        {/* Temperatura ambiente */}
+        <div className="pt-2 border-t border-border">
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-xs text-muted-foreground">{t("mat.temp_ambiente")}</p>
+            <span className="text-sm font-bold text-primary">{tAmbiente}°C</span>
+          </div>
+          <input type="range" min={5} max={40} value={tAmbiente}
+            onChange={(e) => setTAmbiente(Number(e.target.value))} className="w-full accent-primary" />
+        </div>
       </div>
 
-      {/* 3. Fermo Frigo */}
+      {/* 4. Fermo Frigo */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
         <div className="flex justify-between items-center">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.fermo_frigo")}</p>
@@ -245,7 +328,7 @@ const AdvancedOptions = ({
         )}
       </div>
 
-      {/* 4. Autolisi */}
+      {/* 5. Autolisi */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
         <div className="flex justify-between items-center">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.autolisi")}</p>
@@ -256,7 +339,7 @@ const AdvancedOptions = ({
         <p className="text-[10px] text-muted-foreground">{t("adv.autolisi_note")}</p>
       </div>
 
-      {/* 5. Prefermento */}
+      {/* 6. Prefermento */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.prefermento")}</p>
         <div className="flex gap-2 mb-2">
@@ -318,63 +401,6 @@ const AdvancedOptions = ({
           </>
         )}
       </div>
-
-      {/* Schedule info */}
-      <button
-        onClick={() => setScheduleDrawerOpen(true)}
-        className="w-full bg-card rounded-2xl p-4 shadow-sm text-left hover:bg-primary/5 transition-colors active:scale-[0.98]"
-      >
-        <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center mb-3">
-          {t("adv.quando_mangiare")}
-        </p>
-        <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.inizia_prep")}</p>
-              <p className="text-sm font-bold text-primary">
-                {format(startTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.durata")}</p>
-              <p className="text-xs font-bold text-foreground">
-                {Math.floor(processDuration)}h
-                {Math.round((processDuration - Math.floor(processDuration)) * 60) > 0
-                  ? ` ${Math.round((processDuration - Math.floor(processDuration)) * 60)}m`
-                  : ""}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.mangio")}</p>
-              <p className="text-sm font-bold text-foreground">
-                {format(endTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
-              </p>
-            </div>
-          </div>
-          <p className="text-[10px] text-primary/60 text-center mt-2">{t("adv.tocca_modificare")}</p>
-        </div>
-        {startTime.getTime() < Date.now() && (
-          <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3 mt-3">
-            <p className="text-[11px] text-destructive leading-relaxed">
-              {t("adv.incompatibile")}
-            </p>
-          </div>
-        )}
-      </button>
-
-      <ScheduleDrawer
-        open={scheduleDrawerOpen}
-        onOpenChange={setScheduleDrawerOpen}
-        maturationMode={maturationMode}
-        setMaturationMode={setMaturationMode}
-        scheduleDate={scheduleDate}
-        setScheduleDate={setScheduleDate}
-        scheduleHour={scheduleHour}
-        setScheduleHour={setScheduleHour}
-        scheduleMinute={scheduleMinute}
-        setScheduleMinute={setScheduleMinute}
-        processDuration={processDuration}
-      />
 
       {/* Idratazione & condimenti */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-4">
