@@ -97,6 +97,7 @@ const AdvancedOptions = ({
   pastaDiRiportoIdratazione, setPastaDiRiportoIdratazione,
   fermoFrigoHours, setFermoFrigoHours,
   maturationHours, setMaturationHours,
+  tAmbiente, setTAmbiente,
   input,
   result,
   startTime, endTime, processDuration,
