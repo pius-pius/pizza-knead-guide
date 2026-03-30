@@ -255,14 +255,22 @@ const Index = () => {
       newTime.setHours(scheduleHour, scheduleMinute, 0, 0);
       if (drawerMode === "quando_inizio") {
         setScheduleStartTime(newTime);
+        // Recalculate endTime = newStart + maturationHours
+        setScheduleEndTime(new Date(newTime.getTime() + maturationHours * 3600000));
         setMaturationMode("quando_inizio");
       } else {
         setScheduleEndTime(newTime);
+        // Recalculate startTime = newEnd - maturationHours, and update maturationHours from new duration
+        const currentStart = scheduleStartTime;
+        const newDurationH = (newTime.getTime() - currentStart.getTime()) / 3600000;
+        if (newDurationH > 0) {
+          setMaturationHours(Math.round(newDurationH));
+        }
         setMaturationMode("quando_mangio");
       }
     }
     setDrawerOpen(open);
-  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode]);
+  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode, maturationHours, scheduleStartTime]);
 
   const addTeglia = useCallback(() => {
     setTeglie((prev) => [
