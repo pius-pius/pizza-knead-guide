@@ -1,12 +1,9 @@
-import { useMemo, useState } from "react";
-import { Minus, Plus, ChevronDown, CalendarIcon, Clock, Trash2, Info, ArrowRight, Upload, Circle, Settings, Check } from "lucide-react";
+import { useMemo } from "react";
+import { Minus, Plus, Trash2, Info, ArrowRight, Upload, Circle, Settings, Check } from "lucide-react";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import ScheduleDrawer from "./ScheduleDrawer";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import {
