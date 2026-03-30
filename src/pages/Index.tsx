@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import heroDough from "@/assets/hero-dough.jpg";
 import DoughCalculator from "@/components/DoughCalculator";
 import AdvancedOptions from "@/components/AdvancedOptions";
+import ScheduleDrawer from "@/components/ScheduleDrawer";
 import DoughResults from "@/components/DoughResults";
 import ProcessTimeline from "@/components/ProcessTimeline";
 import RisingTimer from "@/components/RisingTimer";
