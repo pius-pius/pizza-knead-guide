@@ -388,7 +388,20 @@ const DoughCalculator = ({
           className="w-full accent-primary" />
       </div>
 
-      {/* 4. Bottom buttons */}
+      <ScheduleDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        maturationMode={maturationMode}
+        setMaturationMode={setMaturationMode}
+        scheduleDate={scheduleDate}
+        setScheduleDate={setScheduleDate}
+        scheduleHour={scheduleHour}
+        setScheduleHour={setScheduleHour}
+        scheduleMinute={scheduleMinute}
+        setScheduleMinute={setScheduleMinute}
+        processDuration={processDuration}
+      />
+
       <div className="flex flex-col sm:flex-row gap-2">
         <button
           onClick={() => onNavigate?.("avanzate")}
