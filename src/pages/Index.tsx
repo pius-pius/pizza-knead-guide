@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import heroDough from "@/assets/hero-dough.jpg";
 import DoughCalculator from "@/components/DoughCalculator";
 import AdvancedOptions from "@/components/AdvancedOptions";
+import ScheduleDrawer from "@/components/ScheduleDrawer";
 import DoughResults from "@/components/DoughResults";
 import ProcessTimeline from "@/components/ProcessTimeline";
 import RisingTimer from "@/components/RisingTimer";
@@ -60,6 +61,7 @@ const Index = () => {
   ];
   const [activeView, setActiveView] = useState<View>("ricetta");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerMode, setDrawerMode] = useState<MaturationMode>("quando_mangio");
 
   // ── All calculator state ──
   const [recipe, setRecipe] = useState<RecipeType>("napoletana");
@@ -73,9 +75,23 @@ const Index = () => {
   const [lmIdratazione, setLmIdratazione] = useState<50 | 100>(50);
   const [maturationHours, setMaturationHours] = useState(6);
   const [maturationMode, setMaturationMode] = useState<MaturationMode>("quando_mangio");
+  // Drawer editing buffer
   const [scheduleDate, setScheduleDate] = useState<Date | undefined>(getDefaultScheduleDate);
   const [scheduleHour, setScheduleHour] = useState(20);
   const [scheduleMinute, setScheduleMinute] = useState(0);
+  // Independent start/end times
+  const [scheduleStartTime, setScheduleStartTime] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(14, 0, 0, 0);
+    return d;
+  });
+  const [scheduleEndTime, setScheduleEndTime] = useState<Date>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(20, 0, 0, 0);
+    return d;
+  });
   const [tAmbiente, setTAmbiente] = useState(22);
   const [autolisiHours, setAutolisiHours] = useState(0);
   const [poolishPercent, setPoolishPercent] = useState(0);
@@ -222,17 +238,31 @@ const Index = () => {
 
   const result = useMemo(() => calculateDough(input), [input]);
   const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
-  const { scheduleStartTime, scheduleEndTime } = useMemo(() => {
-    const now = new Date();
-    const scheduled = scheduleDate ? new Date(scheduleDate) : now;
-    if (scheduleDate) {
-      scheduled.setHours(scheduleHour, scheduleMinute, 0, 0);
+  const openScheduleDrawer = useCallback((mode: MaturationMode) => {
+    setDrawerMode(mode);
+    const source = mode === "quando_inizio" ? scheduleStartTime : scheduleEndTime;
+    const d = new Date(source);
+    d.setHours(0, 0, 0, 0);
+    setScheduleDate(d);
+    setScheduleHour(source.getHours());
+    setScheduleMinute(source.getMinutes());
+    setDrawerOpen(true);
+  }, [scheduleStartTime, scheduleEndTime]);
+
+  const handleDrawerClose = useCallback((open: boolean) => {
+    if (!open && scheduleDate) {
+      const newTime = new Date(scheduleDate);
+      newTime.setHours(scheduleHour, scheduleMinute, 0, 0);
+      if (drawerMode === "quando_inizio") {
+        setScheduleStartTime(newTime);
+        setMaturationMode("quando_inizio");
+      } else {
+        setScheduleEndTime(newTime);
+        setMaturationMode("quando_mangio");
+      }
     }
-    const isInizio = maturationMode === "quando_inizio";
-    const st = isInizio ? scheduled : new Date(scheduled.getTime() - processDuration * 3600 * 1000);
-    const et = isInizio ? new Date(scheduled.getTime() + processDuration * 3600 * 1000) : scheduled;
-    return { scheduleStartTime: st, scheduleEndTime: et };
-  }, [scheduleDate, scheduleHour, scheduleMinute, maturationMode, processDuration]);
+    setDrawerOpen(open);
+  }, [scheduleDate, scheduleHour, scheduleMinute, drawerMode]);
 
   const addTeglia = useCallback(() => {
     setTeglie((prev) => [
@@ -373,15 +403,13 @@ const Index = () => {
             addTeglia={addTeglia} removeTeglia={removeTeglia} updateTeglia={updateTeglia}
             idratazione={idratazione} setIdratazione={setIdratazione}
             maturationHours={maturationHours} setMaturationHours={setMaturationHours}
-            maturationMode={maturationMode} setMaturationMode={setMaturationMode}
-            scheduleDate={scheduleDate} setScheduleDate={setScheduleDate}
-            scheduleHour={scheduleHour} setScheduleHour={setScheduleHour}
-            scheduleMinute={scheduleMinute} setScheduleMinute={setScheduleMinute}
             tAmbiente={tAmbiente} setTAmbiente={setTAmbiente}
             breadCustom={breadCustom} setBreadCustom={setBreadCustom}
             breadCustomWeight={breadCustomWeight} setBreadCustomWeight={setBreadCustomWeight}
             result={result} input={input}
-            drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}
+            scheduleStartTime={scheduleStartTime}
+            scheduleEndTime={scheduleEndTime}
+            onOpenScheduleDrawer={openScheduleDrawer}
             onNavigate={handleNavigate}
             onSave={saveRecipe}
           />
@@ -412,11 +440,7 @@ const Index = () => {
             result={result}
             startTime={scheduleStartTime}
             endTime={scheduleEndTime}
-            processDuration={processDuration}
-            maturationMode={maturationMode} setMaturationMode={setMaturationMode}
-            scheduleDate={scheduleDate} setScheduleDate={setScheduleDate}
-            scheduleHour={scheduleHour} setScheduleHour={setScheduleHour}
-            scheduleMinute={scheduleMinute} setScheduleMinute={setScheduleMinute}
+            onOpenScheduleDrawer={openScheduleDrawer}
             onNavigate={handleNavigate}
             onSave={saveRecipe}
           />
@@ -441,6 +465,19 @@ const Index = () => {
             scheduleMinute={scheduleMinute}
           />
         )}
+
+        <ScheduleDrawer
+          open={drawerOpen}
+          onOpenChange={handleDrawerClose}
+          maturationMode={drawerMode}
+          scheduleDate={scheduleDate}
+          setScheduleDate={setScheduleDate}
+          scheduleHour={scheduleHour}
+          setScheduleHour={setScheduleHour}
+          scheduleMinute={scheduleMinute}
+          setScheduleMinute={setScheduleMinute}
+          otherTime={drawerMode === "quando_inizio" ? scheduleEndTime : scheduleStartTime}
+        />
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-50">

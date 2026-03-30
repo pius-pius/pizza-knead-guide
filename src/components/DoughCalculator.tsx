@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { it } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
-import ScheduleDrawer from "./ScheduleDrawer";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import {
@@ -33,6 +32,10 @@ interface TegliaDetail extends Teglia {
 
 const BREAD_WEIGHTS = [500, 750, 1000];
 
+// Configurable thresholds
+const MIN_DURATION_HOURS = 4;
+const MAX_DURATION_BEFORE_FRIGO_ALERT = 8;
+
 interface DoughCalculatorProps {
   recipe: RecipeType;
   setRecipe: (r: RecipeType) => void;
@@ -50,14 +53,6 @@ interface DoughCalculatorProps {
   setIdratazione: (n: number) => void;
   maturationHours: number;
   setMaturationHours: (n: number) => void;
-  maturationMode: MaturationMode;
-  setMaturationMode: (m: MaturationMode) => void;
-  scheduleDate?: Date;
-  setScheduleDate: (d: Date | undefined) => void;
-  scheduleHour: number;
-  setScheduleHour: (n: number) => void;
-  scheduleMinute: number;
-  setScheduleMinute: (n: number) => void;
   tAmbiente: number;
   setTAmbiente: (n: number) => void;
   breadCustom: boolean;
@@ -66,8 +61,9 @@ interface DoughCalculatorProps {
   setBreadCustomWeight: (n: number) => void;
   result: DoughResult;
   input: DoughInput;
-  drawerOpen: boolean;
-  setDrawerOpen: (b: boolean) => void;
+  scheduleStartTime: Date;
+  scheduleEndTime: Date;
+  onOpenScheduleDrawer: (mode: MaturationMode) => void;
   onNavigate?: (view: string) => void;
   onSave?: () => void;
 }
@@ -81,15 +77,12 @@ const DoughCalculator = ({
   addTeglia, removeTeglia, updateTeglia,
   idratazione, setIdratazione,
   maturationHours, setMaturationHours,
-  maturationMode, setMaturationMode,
-  scheduleDate, setScheduleDate,
-  scheduleHour, setScheduleHour,
-  scheduleMinute, setScheduleMinute,
   tAmbiente, setTAmbiente,
   breadCustom, setBreadCustom,
   breadCustomWeight, setBreadCustomWeight,
   result, input,
-  drawerOpen, setDrawerOpen,
+  scheduleStartTime, scheduleEndTime,
+  onOpenScheduleDrawer,
   onNavigate,
   onSave
 }: DoughCalculatorProps) => {
@@ -98,7 +91,9 @@ const DoughCalculator = ({
   const isTeglia = recipe === "teglia_romana" || recipe === "focaccia_genovese";
   const isPane = recipe === "pane_classico";
 
-  const processDuration = useMemo(() => getProcessDuration(input, result), [input, result]);
+  const scheduleDuration = useMemo(() => {
+    return (scheduleEndTime.getTime() - scheduleStartTime.getTime()) / 3600000;
+  }, [scheduleStartTime, scheduleEndTime]);
 
   const allRecipes: {key: RecipeType | "carica"; nameKey: string; disabled?: boolean;}[] = [
     { key: "napoletana", nameKey: "recipe.napoletana" },
@@ -108,6 +103,12 @@ const DoughCalculator = ({
     { key: "napoletana_contemporanea", nameKey: "recipe.napoletana_contemporanea" },
     { key: "carica", nameKey: "recipe.carica", disabled: true },
   ];
+
+  const durationH = Math.floor(scheduleDuration);
+  const durationM = Math.round((scheduleDuration - durationH) * 60);
+  const processIncompatible = scheduleStartTime.getTime() < Date.now();
+  const isTooShort = scheduleDuration < MIN_DURATION_HOURS;
+  const isTooLong = scheduleDuration > MAX_DURATION_BEFORE_FRIGO_ALERT;
 
   return (
     <section className="px-4 py-6 space-y-4">
@@ -283,80 +284,56 @@ const DoughCalculator = ({
       {/* 3. Schedule */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
         <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">{t("sched.dimmi_quando")}</p>
-        {(() => {
-          const MIN_DURATION_HOURS = 4;
-          const MAX_DURATION_BEFORE_FRIGO_ALERT = 8;
-          const now = new Date();
-          const scheduled = scheduleDate ? new Date(scheduleDate) : now;
-          if (scheduleDate) {
-            scheduled.setHours(scheduleHour, scheduleMinute, 0, 0);
-          }
-          const isInizio = maturationMode === "quando_inizio";
-          const startTime = isInizio ?
-          scheduled :
-          new Date(scheduled.getTime() - processDuration * 3600 * 1000);
-          const endTime = isInizio ?
-          new Date(scheduled.getTime() + processDuration * 3600 * 1000) :
-          scheduled;
-          const durationH = Math.floor(processDuration);
-          const durationM = Math.round((processDuration - durationH) * 60);
-          const processIncompatible = startTime.getTime() < now.getTime();
-          const isTooShort = processDuration < MIN_DURATION_HOURS;
-          const isTooLong = processDuration > MAX_DURATION_BEFORE_FRIGO_ALERT;
-          return (
-            <>
-              <div className="w-full bg-primary/5 rounded-xl p-3 border border-primary/10">
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => {setMaturationMode("quando_inizio");setDrawerOpen(true);}}
-                    className="text-left hover:opacity-70 transition-opacity active:scale-[0.97]"
-                  >
-                    <p className="text-[10px] text-muted-foreground uppercase">{t("sched.inizia_prep")}</p>
-                    <p className="text-sm font-bold text-primary">
-                      {format(startTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
-                    </p>
-                  </button>
-                  <div className="text-center">
-                    <p className="text-[10px] text-muted-foreground uppercase">{t("sched.durata")}</p>
-                    <p className="text-xs font-bold text-foreground">
-                      {durationH}h{durationM > 0 ? ` ${durationM}m` : ""}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {setMaturationMode("quando_mangio");setDrawerOpen(true);}}
-                    className="text-right hover:opacity-70 transition-opacity active:scale-[0.97]"
-                  >
-                    <p className="text-[10px] text-muted-foreground uppercase">{t("sched.mangio")}</p>
-                    <p className="text-sm font-bold text-foreground">
-                      {format(endTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
-                    </p>
-                  </button>
-                </div>
-                <p className="text-[10px] text-primary/60 text-center mt-2">{t("sched.tocca_modificare")}</p>
-              </div>
-              {isTooShort && (
-                <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
-                  <p className="text-[11px] text-destructive leading-relaxed">
-                    {t("sched.liev_troppo_corta")}
-                  </p>
-                </div>
-              )}
-              {isTooLong && !isTooShort && (
-                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
-                  <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
-                    {t("sched.consiglio_frigo")}
-                  </p>
-                </div>
-              )}
-              {processIncompatible && (
-                <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
-                  <p className="text-[11px] text-destructive leading-relaxed">
-                    {t("sched.incompatibile")}
-                  </p>
-                </div>
-              )}
-            </>);
-        })()}
+        <div className="w-full bg-primary/5 rounded-xl p-3 border border-primary/10">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => onOpenScheduleDrawer("quando_inizio")}
+              className="text-left hover:opacity-70 transition-opacity active:scale-[0.97]"
+            >
+              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.inizia_prep")}</p>
+              <p className="text-sm font-bold text-primary">
+                {format(scheduleStartTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
+              </p>
+            </button>
+            <div className="text-center">
+              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.durata")}</p>
+              <p className="text-xs font-bold text-foreground">
+                {durationH}h{durationM > 0 ? ` ${durationM}m` : ""}
+              </p>
+            </div>
+            <button
+              onClick={() => onOpenScheduleDrawer("quando_mangio")}
+              className="text-right hover:opacity-70 transition-opacity active:scale-[0.97]"
+            >
+              <p className="text-[10px] text-muted-foreground uppercase">{t("sched.mangio")}</p>
+              <p className="text-sm font-bold text-foreground">
+                {format(scheduleEndTime, "EEE d MMM, HH:mm", { locale: dateLocale })}
+              </p>
+            </button>
+          </div>
+          <p className="text-[10px] text-primary/60 text-center mt-2">{t("sched.tocca_modificare")}</p>
+        </div>
+        {isTooShort && (
+          <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
+            <p className="text-[11px] text-destructive leading-relaxed">
+              {t("sched.liev_troppo_corta")}
+            </p>
+          </div>
+        )}
+        {isTooLong && !isTooShort && (
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
+            <p className="text-[11px] text-amber-700 dark:text-amber-400 leading-relaxed">
+              {t("sched.consiglio_frigo")}
+            </p>
+          </div>
+        )}
+        {processIncompatible && (
+          <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-3">
+            <p className="text-[11px] text-destructive leading-relaxed">
+              {t("sched.incompatibile")}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* 4. Temperatura ambiente */}
@@ -388,20 +365,7 @@ const DoughCalculator = ({
           className="w-full accent-primary" />
       </div>
 
-      <ScheduleDrawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        maturationMode={maturationMode}
-        setMaturationMode={setMaturationMode}
-        scheduleDate={scheduleDate}
-        setScheduleDate={setScheduleDate}
-        scheduleHour={scheduleHour}
-        setScheduleHour={setScheduleHour}
-        scheduleMinute={scheduleMinute}
-        setScheduleMinute={setScheduleMinute}
-        processDuration={processDuration}
-      />
-
+      {/* 5. Bottom buttons */}
       <div className="flex flex-col sm:flex-row gap-2">
         <button
           onClick={() => onNavigate?.("avanzate")}
