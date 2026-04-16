@@ -151,8 +151,8 @@ const AdvancedOptions = ({
   ];
 
   return (
-    <section className="px-4 py-6 space-y-4">
-      <h2 className="text-2xl font-bold text-center mb-2">{t("adv.title")}</h2>
+    <section className="px-4 py-6 space-y-4 animate-fade-in">
+      <h2 className="text-2xl font-display font-bold text-center mb-2">{t("adv.title")}</h2>
 
       {/* 1. Schedule block — FIRST */}
       <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
