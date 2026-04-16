@@ -350,18 +350,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto">
-      <header className="relative h-36 overflow-hidden flex-shrink-0">
+      <header className="relative h-40 overflow-hidden flex-shrink-0">
         <img
           src={heroDough}
           alt={lang === "it" ? "Impasto per pizza su tagliere di legno con farina" : "Pizza dough on a wooden board with flour"}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover scale-105"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-foreground/30 to-foreground/70 flex flex-col justify-end p-4">
+        <div className="absolute inset-0 bg-gradient-to-b from-foreground/20 via-foreground/40 to-foreground/80 flex flex-col justify-end p-5">
           <div className="absolute top-3 right-3 flex items-center gap-2">
             <button
               onClick={() => setLang(lang === "it" ? "en" : "it")}
-              className="flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
+              className="flex items-center gap-1 bg-card/15 backdrop-blur-md text-primary-foreground px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-card/25 transition-all duration-200"
             >
               <Globe className="h-3.5 w-3.5" />
               {lang === "it" ? "EN" : "IT"}
@@ -369,24 +369,24 @@ const Index = () => {
             {user ? (
               <button
                 onClick={() => navigate("/profile")}
-                className="flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
+                className="flex items-center gap-1 bg-card/15 backdrop-blur-md text-primary-foreground px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-card/25 transition-all duration-200"
               >
                 <User className="h-3.5 w-3.5" />
               </button>
             ) : (
               <button
                 onClick={() => navigate("/login")}
-                className="flex items-center gap-1 bg-background/20 backdrop-blur-sm text-primary-foreground px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-background/40 transition-colors"
+                className="flex items-center gap-1 bg-card/15 backdrop-blur-md text-primary-foreground px-3 py-1.5 rounded-full text-xs font-semibold hover:bg-card/25 transition-all duration-200"
               >
                 <User className="h-3.5 w-3.5" />
                 {t("auth.login")}
               </button>
             )}
           </div>
-          <h1 className="text-2xl font-bold text-primary-foreground leading-tight text-center">
+          <h1 className="text-2xl font-display font-bold text-primary-foreground leading-tight text-center drop-shadow-lg">
             {t("app.title")}
           </h1>
-          <p className="text-primary-foreground/80 text-xs mt-0.5 text-center">
+          <p className="text-primary-foreground/70 text-xs mt-1 text-center font-medium">
             {t("app.subtitle")}
           </p>
         </div>
@@ -394,24 +394,24 @@ const Index = () => {
 
       {/* Save dialog */}
       {showSaveDialog && (
-        <div className="fixed inset-0 bg-foreground/50 z-[60] flex items-center justify-center p-4">
-          <div className="bg-card rounded-2xl p-6 shadow-xl w-full max-w-sm space-y-4">
-            <h3 className="text-lg font-bold">{t("save.btn")}</h3>
+        <div className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div className="glass-strong rounded-2xl p-6 shadow-elevated w-full max-w-sm space-y-4">
+            <h3 className="text-lg font-display font-bold">{t("save.btn")}</h3>
             <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase">{t("save.name_prompt")}</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("save.name_prompt")}</label>
               <input
                 type="text"
                 value={saveRecipeName}
                 onChange={(e) => setSaveRecipeName(e.target.value)}
-                className="w-full mt-1 bg-secondary rounded-xl px-3 py-2 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary"
+                className="w-full mt-1 bg-secondary/60 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/30 transition-shadow"
                 autoFocus
               />
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setShowSaveDialog(false)} className="flex-1 py-2 rounded-xl text-sm font-medium bg-secondary text-secondary-foreground">
+              <button onClick={() => setShowSaveDialog(false)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-secondary/60 text-secondary-foreground hover:bg-secondary transition-colors">
                 {t("proc.annulla")}
               </button>
-              <button onClick={confirmSaveRecipe} disabled={savingRecipe || !saveRecipeName.trim()} className="flex-1 py-2 rounded-xl text-sm font-bold bg-primary text-primary-foreground disabled:opacity-50 flex items-center justify-center gap-1">
+              <button onClick={confirmSaveRecipe} disabled={savingRecipe || !saveRecipeName.trim()} className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-primary text-primary-foreground disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-glow hover:shadow-elevated transition-all">
                 {savingRecipe ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {t("btn.conferma")}
               </button>
@@ -509,7 +509,7 @@ const Index = () => {
         />
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card/80 backdrop-blur-xl border-t border-border/50 z-50">
         <div className="max-w-lg md:max-w-2xl lg:max-w-4xl mx-auto flex">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -518,11 +518,14 @@ const Index = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveView(tab.id)}
-                className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 transition-colors ${
-                  isActive ? "text-primary" : "text-muted-foreground"
+                className={`flex-1 flex flex-col items-center gap-0.5 py-3 transition-all duration-200 relative ${
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground/70"
                 }`}
               >
-                <Icon className="h-4.5 w-4.5" strokeWidth={isActive ? 2.5 : 2} />
+                {isActive && (
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
+                )}
+                <Icon className="h-[18px] w-[18px]" strokeWidth={isActive ? 2.5 : 1.8} />
                 <span className="text-[10px] font-semibold">{tab.label}</span>
               </button>
             );
