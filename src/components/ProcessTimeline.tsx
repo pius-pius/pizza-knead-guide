@@ -40,7 +40,6 @@ const ProcessTimeline = ({
   const result = useMemo(() => calculateDough(input), [input]);
   const steps = useMemo(() => generateProcess(input, result), [input, result]);
 
-  // Translate step names and descriptions
   const translatedSteps = useMemo(() => {
     const stepNameMap: Record<string, { nameKey: string; descKey: string }> = {
       start: { nameKey: "step.start", descKey: "step.start_desc" },
@@ -154,17 +153,17 @@ const ProcessTimeline = ({
     : addHours(baseStartTime, totalHours);
 
   return (
-    <section className="px-4 py-6">
-      <h2 className="text-2xl font-bold text-center mb-2">{t("proc.title")}</h2>
+    <section className="px-4 py-6 animate-fade-in">
+      <h2 className="text-2xl font-display font-bold text-center mb-2">{t("proc.title")}</h2>
       <p className="text-center text-muted-foreground text-sm mb-1">
         {t("proc.tempo_totale")}: ~{formatDuration(totalHours)}
       </p>
-      <p className="text-center text-xs text-primary font-medium mb-6">
+      <p className="text-center text-xs text-primary font-semibold mb-6">
         {t("proc.inizio")}: {formatDateTime(stepTimes[0] || baseStartTime)} → {t("proc.fine")}: {formatDateTime(endTime)}
       </p>
 
       <div className="relative">
-        <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-border" />
+        <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/30 via-primary/15 to-transparent" />
 
         <div className="space-y-0">
           {translatedSteps.map((step, i) => {
@@ -178,25 +177,25 @@ const ProcessTimeline = ({
             return (
               <div
                 key={`${step.id}-${i}`}
-                className={`relative pl-12 pb-6 cursor-pointer transition-opacity ${
-                  completed ? "opacity-40" : "opacity-100"
+                className={`relative pl-12 pb-6 cursor-pointer transition-all duration-300 ${
+                  completed ? "opacity-35" : "opacity-100"
                 }`}
                 onClick={() => handleStepClick(i)}
               >
                 <div
-                  className={`absolute left-3.5 top-1 w-3.5 h-3.5 rounded-full border-2 border-background shadow-sm ${
-                    completed ? "bg-muted-foreground" : "bg-primary"
+                  className={`absolute left-3.5 top-1 w-3.5 h-3.5 rounded-full border-2 border-background transition-all duration-300 ${
+                    completed ? "bg-muted-foreground scale-75" : "bg-primary shadow-glow"
                   }`}
                 />
 
-                <div className={`bg-card rounded-xl p-4 shadow-sm ${
+                <div className={`glass rounded-xl p-4 shadow-soft transition-all duration-200 hover:shadow-card ${
                   completed ? "border border-muted" : ""
                 }`}>
                   <div className="flex items-start gap-2">
                     <span className="text-xl">{step.icon}</span>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <p className="font-semibold text-sm">{step.name}</p>
+                        <p className="font-display font-bold text-sm">{step.name}</p>
                         <div className="flex items-center gap-1.5">
                           {isClickedStep && (
                             <button
@@ -207,16 +206,16 @@ const ProcessTimeline = ({
                               {t("proc.annulla")}
                             </button>
                           )}
-                          <span className="text-[10px] text-muted-foreground font-mono whitespace-nowrap">
+                          <span className="text-[10px] text-muted-foreground font-mono whitespace-nowrap tabular-nums">
                             {startStr}
                           </span>
                         </div>
                       </div>
                       {steps[i].durationHours > 0 && (
-                        <p className="text-[10px] text-primary font-medium mt-0.5">
+                        <p className="text-[10px] text-primary font-semibold mt-0.5">
                           ⏱ {formatDuration(steps[i].durationHours)}
                           {startStr !== endStr && (
-                            <span className="text-muted-foreground ml-1">
+                            <span className="text-muted-foreground ml-1 font-normal">
                               ({startStr} → {endStr})
                             </span>
                           )}

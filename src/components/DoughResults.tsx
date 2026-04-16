@@ -62,24 +62,24 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
   ].filter(i => i.show);
 
   return (
-    <section className="px-4 py-6 space-y-4">
-      <h2 className="text-2xl font-bold text-center mb-1">{t("dosi.title")}</h2>
+    <section className="px-4 py-6 space-y-4 animate-fade-in">
+      <h2 className="text-2xl font-display font-bold text-center mb-1">{t("dosi.title")}</h2>
 
       {/* Total */}
-      <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 text-center">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("dosi.impasto_totale")}</p>
-        <p className="text-3xl font-display font-bold text-primary mt-1">{result.totaleImpasto}g</p>
+      <div className="bg-gradient-to-br from-primary/8 to-primary/15 rounded-2xl p-5 border border-primary/15 text-center">
+        <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("dosi.impasto_totale")}</p>
+        <p className="text-4xl font-display font-bold text-primary mt-1 tabular-nums">{result.totaleImpasto}g</p>
       </div>
 
       {/* Ingredients */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {ingredients.map((ing) => (
-          <div key={ing.name} className="bg-card rounded-xl p-3.5 shadow-sm flex items-center justify-between">
+          <div key={ing.name} className="glass rounded-xl p-4 shadow-soft flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-xl">{ing.icon}</span>
               <span className="font-medium text-sm">{ing.name}</span>
             </div>
-            <span className="text-base font-bold text-primary">{ing.amount}</span>
+            <span className="text-base font-display font-bold text-primary tabular-nums">{ing.amount}</span>
           </div>
         ))}
       </div>
@@ -87,7 +87,7 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
       {/* Poolish results */}
       {input.poolishPercent > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1 pt-2">
+          <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider px-1 pt-2">
             {prefermentoType === "biga" ? "Biga" : "Poolish"}
           </p>
           {[
@@ -95,31 +95,31 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
             { name: t(prefermentoType === "biga" ? "dosi.acqua_biga" : "dosi.acqua_poolish"), amount: `${result.poolishAcqua}g`, icon: "💧" },
             { name: t(prefermentoType === "biga" ? "dosi.lievito_biga" : "dosi.lievito_poolish"), amount: `${result.poolishLievito}g`, icon: "🫧" },
           ].map((ing) => (
-            <div key={ing.name} className="bg-card rounded-xl p-3.5 shadow-sm flex items-center justify-between">
+            <div key={ing.name} className="glass rounded-xl p-4 shadow-soft flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-xl">{ing.icon}</span>
                 <span className="font-medium text-sm">{ing.name}</span>
               </div>
-              <span className="text-base font-bold text-primary">{ing.amount}</span>
+              <span className="text-base font-display font-bold text-primary tabular-nums">{ing.amount}</span>
             </div>
           ))}
         </div>
       )}
 
       {/* Water temperature */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-4">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("dosi.temp_acqua")}</p>
+      <div className="glass rounded-2xl p-5 shadow-card space-y-4">
+        <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("dosi.temp_acqua")}</p>
 
         {/* Mixing method selector */}
         <div>
-          <p className="text-[10px] text-muted-foreground uppercase mb-2">{t("dosi.metodo_impasto")}</p>
+          <p className="text-[10px] text-muted-foreground uppercase mb-2 font-medium">{t("dosi.metodo_impasto")}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5">
             {(Object.keys(MIXING_METHOD_LABELS) as MixingMethod[]).map((key) => (
               <button key={key} onClick={() => setMixingMethod(key)}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+                className={`py-2.5 px-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
                   mixingMethod === key
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-secondary text-secondary-foreground"
+                    ? "bg-primary text-primary-foreground shadow-glow"
+                    : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
                 }`}>
                 {t(MIXING_KEYS[key] as any)}
               </button>
@@ -131,14 +131,15 @@ const DoughResults = ({ input, tAmbiente, flourMode, flours, mixingMethod, setMi
         <div className="text-center">
           <div className="relative inline-flex items-center justify-center w-28 h-28">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--secondary))" strokeWidth="6" />
+              <circle cx="50" cy="50" r="44" fill="none" stroke="hsl(var(--secondary))" strokeWidth="5" />
               <circle cx="50" cy="50" r="44" fill="none"
                 stroke={tAcqua < 5 ? "hsl(210, 80%, 55%)" : tAcqua > 35 ? "hsl(0, 70%, 55%)" : "hsl(var(--primary))"}
-                strokeWidth="6" strokeLinecap="round"
+                strokeWidth="5" strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 44}`}
-                strokeDashoffset={`${2 * Math.PI * 44 * (1 - Math.min(Math.max(tAcqua, 0), 45) / 45)}`} />
+                strokeDashoffset={`${2 * Math.PI * 44 * (1 - Math.min(Math.max(tAcqua, 0), 45) / 45)}`}
+                style={{ filter: "drop-shadow(0 0 4px hsl(var(--primary) / 0.3))" }} />
             </svg>
-            <span className="absolute text-2xl font-display font-bold">{tAcqua}°C</span>
+            <span className="absolute text-2xl font-display font-bold tabular-nums">{tAcqua}°C</span>
           </div>
           <p className="text-[10px] text-muted-foreground mt-1">
             {t("dosi.t_ambiente")}: {tAmbiente}°C • {t("dosi.t_impasto")}: {tDesiderata}°C

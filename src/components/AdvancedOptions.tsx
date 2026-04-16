@@ -151,12 +151,12 @@ const AdvancedOptions = ({
   ];
 
   return (
-    <section className="px-4 py-6 space-y-4">
-      <h2 className="text-2xl font-bold text-center mb-2">{t("adv.title")}</h2>
+    <section className="px-4 py-6 space-y-4 animate-fade-in">
+      <h2 className="text-2xl font-display font-bold text-center mb-2">{t("adv.title")}</h2>
 
       {/* 1. Schedule block — FIRST */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
-        <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
+        <p className="text-xs font-display font-bold text-primary uppercase tracking-wider text-center">
           {t("sched.imposta_processo")}
         </p>
 
@@ -202,8 +202,8 @@ const AdvancedOptions = ({
       </div>
 
       {/* 2. Tipo Lievito */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.tipo_lievito")}</p>
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
+        <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("adv.tipo_lievito")}</p>
         <div className="grid grid-cols-3 gap-2">
           {yeastOptions.map((opt) => (
             <button
@@ -212,8 +212,8 @@ const AdvancedOptions = ({
               className={cn(
                 "py-2.5 rounded-xl text-xs font-semibold transition-all",
                 activeYeastButton === opt.key
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "bg-secondary text-secondary-foreground"
+                  ? "bg-primary text-primary-foreground shadow-glow"
+                  : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
               )}
             >
               {opt.label}
@@ -249,9 +249,9 @@ const AdvancedOptions = ({
       </div>
 
       {/* 3. Ore di maturazione + Temperatura ambiente */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <div className="flex justify-between items-center">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.ore_maturazione")}</p>
+          <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("adv.ore_maturazione")}</p>
           <span className="text-sm font-bold text-primary">{maturationHours}h</span>
         </div>
         <input type="range" min={1} max={72} value={maturationHours}
@@ -276,9 +276,9 @@ const AdvancedOptions = ({
       </div>
 
       {/* 4. Fermo Frigo */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <div className="flex justify-between items-center">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.fermo_frigo")}</p>
+          <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("adv.fermo_frigo")}</p>
           <span className="text-sm font-bold text-primary">{fermoFrigoHours}h</span>
         </div>
         <input type="range" min={0} max={Math.max(0, maturationHours - 1)} value={fermoFrigoHours}
@@ -297,9 +297,9 @@ const AdvancedOptions = ({
       </div>
 
       {/* 5. Autolisi */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <div className="flex justify-between items-center">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.autolisi")}</p>
+          <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("adv.autolisi")}</p>
           <span className="text-sm font-bold text-primary">{autolisiHours}h</span>
         </div>
         <input type="range" min={0} max={4} step={0.5} value={autolisiHours}
@@ -308,8 +308,8 @@ const AdvancedOptions = ({
       </div>
 
       {/* 6. Prefermento */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.prefermento")}</p>
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
+        <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("adv.prefermento")}</p>
         <div className="flex gap-2 mb-2">
           {(["biga", "poolish"] as PrefermentoType[]).map((type) => (
             <button key={type} onClick={() => handlePrefermentoTypeChange(type)}
@@ -371,10 +371,10 @@ const AdvancedOptions = ({
       </div>
 
       {/* Idratazione & condimenti */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-4">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-4">
         <div>
           <div className="flex justify-between items-center mb-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.idratazione")}</p>
+            <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("adv.idratazione")}</p>
             <span className="text-sm font-bold text-primary">{idratazione}%</span>
           </div>
           <input type="range" min={50} max={100} step={1} value={idratazione}
@@ -395,7 +395,7 @@ const AdvancedOptions = ({
         {/* Pasta di riporto */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.pasta_riporto")}</p>
+            <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("adv.pasta_riporto")}</p>
             <span className="text-sm font-bold text-primary">{pastaDiRiporto}g</span>
           </div>
           <input type="range" min={0} max={500} step={10} value={pastaDiRiporto}
@@ -404,17 +404,17 @@ const AdvancedOptions = ({
       </div>
 
       {/* Farine */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.farine")}</p>
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
+        <p className="text-xs font-display font-bold text-muted-foreground uppercase tracking-wider">{t("adv.farine")}</p>
         <div className="flex gap-2">
           <button onClick={() => setFlourMode("mono")}
             className={cn("flex-1 py-2 rounded-xl text-xs font-semibold transition-all",
-              flourMode === "mono" ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground")}>
+              flourMode === "mono" ? "bg-primary text-primary-foreground shadow-glow" : "bg-secondary/60 text-secondary-foreground hover:bg-secondary")}>
             {t("adv.monofarina")}
           </button>
           <button onClick={() => setFlourMode("mix")}
             className={cn("flex-1 py-2 rounded-xl text-xs font-semibold transition-all",
-              flourMode === "mix" ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground")}>
+              flourMode === "mix" ? "bg-primary text-primary-foreground shadow-glow" : "bg-secondary/60 text-secondary-foreground hover:bg-secondary")}>
             {t("adv.mix_farine")}
           </button>
         </div>
