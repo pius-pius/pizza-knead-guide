@@ -155,7 +155,7 @@ const AdvancedOptions = ({
       <h2 className="text-2xl font-display font-bold text-center mb-2">{t("adv.title")}</h2>
 
       {/* 1. Schedule block — FIRST */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <p className="text-xs font-semibold text-primary uppercase tracking-wide text-center">
           {t("sched.imposta_processo")}
         </p>
@@ -202,7 +202,7 @@ const AdvancedOptions = ({
       </div>
 
       {/* 2. Tipo Lievito */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.tipo_lievito")}</p>
         <div className="grid grid-cols-3 gap-2">
           {yeastOptions.map((opt) => (
@@ -249,7 +249,7 @@ const AdvancedOptions = ({
       </div>
 
       {/* 3. Ore di maturazione + Temperatura ambiente */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <div className="flex justify-between items-center">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.ore_maturazione")}</p>
           <span className="text-sm font-bold text-primary">{maturationHours}h</span>
@@ -276,7 +276,7 @@ const AdvancedOptions = ({
       </div>
 
       {/* 4. Fermo Frigo */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <div className="flex justify-between items-center">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.fermo_frigo")}</p>
           <span className="text-sm font-bold text-primary">{fermoFrigoHours}h</span>
@@ -297,7 +297,7 @@ const AdvancedOptions = ({
       </div>
 
       {/* 5. Autolisi */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <div className="flex justify-between items-center">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.autolisi")}</p>
           <span className="text-sm font-bold text-primary">{autolisiHours}h</span>
@@ -308,7 +308,7 @@ const AdvancedOptions = ({
       </div>
 
       {/* 6. Prefermento */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.prefermento")}</p>
         <div className="flex gap-2 mb-2">
           {(["biga", "poolish"] as PrefermentoType[]).map((type) => (
@@ -371,7 +371,7 @@ const AdvancedOptions = ({
       </div>
 
       {/* Idratazione & condimenti */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-4">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-4">
         <div>
           <div className="flex justify-between items-center mb-2">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.idratazione")}</p>
@@ -404,7 +404,7 @@ const AdvancedOptions = ({
       </div>
 
       {/* Farine */}
-      <div className="bg-card rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="glass rounded-2xl p-5 shadow-card space-y-3">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("adv.farine")}</p>
         <div className="flex gap-2">
           <button onClick={() => setFlourMode("mono")}
