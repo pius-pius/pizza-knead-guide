@@ -212,8 +212,8 @@ const AdvancedOptions = ({
               className={cn(
                 "py-2.5 rounded-xl text-xs font-semibold transition-all",
                 activeYeastButton === opt.key
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "bg-secondary text-secondary-foreground"
+                  ? "bg-primary text-primary-foreground shadow-glow"
+                  : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
               )}
             >
               {opt.label}
@@ -409,12 +409,12 @@ const AdvancedOptions = ({
         <div className="flex gap-2">
           <button onClick={() => setFlourMode("mono")}
             className={cn("flex-1 py-2 rounded-xl text-xs font-semibold transition-all",
-              flourMode === "mono" ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground")}>
+              flourMode === "mono" ? "bg-primary text-primary-foreground shadow-glow" : "bg-secondary/60 text-secondary-foreground hover:bg-secondary")}>
             {t("adv.monofarina")}
           </button>
           <button onClick={() => setFlourMode("mix")}
             className={cn("flex-1 py-2 rounded-xl text-xs font-semibold transition-all",
-              flourMode === "mix" ? "bg-primary text-primary-foreground shadow-md" : "bg-secondary text-secondary-foreground")}>
+              flourMode === "mix" ? "bg-primary text-primary-foreground shadow-glow" : "bg-secondary/60 text-secondary-foreground hover:bg-secondary")}>
             {t("adv.mix_farine")}
           </button>
         </div>
